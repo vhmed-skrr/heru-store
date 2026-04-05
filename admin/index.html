@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
+    <script src="/data.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heru - لوحة التحكم</title>
@@ -564,11 +565,7 @@ const app = {
     
     init() {
         if(window.lucide) lucide.createIcons();
-        if(localStorage.getItem('heru_settings')) {
-            this.settings = { ...this.settings, ...JSON.parse(localStorage.getItem('heru_settings')) };
-        } else {
-            localStorage.setItem('heru_settings', JSON.stringify(this.settings));
-        }
+        this.settings = getSettings();
         
         if(sessionStorage.getItem('heru_admin_auth') === 'true') {
             document.getElementById('auth-overlay').style.display = 'none';
@@ -643,12 +640,12 @@ const app = {
     },
     
     loadData() {
-        this.products = JSON.parse(localStorage.getItem('heru_products') || '[]');
-        this.orders = JSON.parse(localStorage.getItem('heru_orders') || '[]');
-        this.reviews = JSON.parse(localStorage.getItem('heru_reviews') || '[]');
-        this.store_reviews = JSON.parse(localStorage.getItem('heru_store_reviews') || '[]');
-        this.categories = JSON.parse(localStorage.getItem('heru_categories') || '[]');
-        this.suggestions = JSON.parse(localStorage.getItem('heru_suggestions') || '[]');
+        this.products = getProducts();
+        this.orders = getOrders();
+        this.reviews = getReviews();
+        this.store_reviews = getStoreReviews();
+        this.categories = getCategories();
+        this.suggestions = getSuggestions();
         this.renderAll();
         
         document.getElementById('set-name-ar').value = this.settings.store_name_ar || '';
@@ -707,7 +704,7 @@ const app = {
             }
             this.settings.updated_at = new Date().toISOString();
             
-            localStorage.setItem('heru_settings', JSON.stringify(this.settings));
+            saveSettings(this.settings);
             window.STORE_CONFIG = this.settings;
             this.toast('تم حفظ الإعدادات ✓');
         };
@@ -932,12 +929,12 @@ const app = {
             if(idx >= 0) {
                 p.rating = app.products[idx].rating || 0;
                 p.reviews = app.products[idx].reviews || 0;
-                app.products[idx] = p;
+                updateProduct(id, p);
             } else {
                 p.rating = 0; p.reviews = 0;
-                app.products.push(p);
+                addProduct(p);
             }
-            localStorage.setItem('heru_products', JSON.stringify(app.products));
+            app.products = getProducts();
             app.productsModule.render(document.querySelector('#prod-tabs .active').dataset.filter);
             app.sidebar.renderDashboard();
             document.getElementById('prodModal').classList.remove('active');
@@ -945,8 +942,8 @@ const app = {
         },
         del(id) {
             if(confirm('هل أنت متأكد من حذف المنتج؟')) {
-                app.products = app.products.filter(x => x.id !== id);
-                localStorage.setItem('heru_products', JSON.stringify(app.products));
+                deleteProduct(id);
+                app.products = getProducts();
                 app.productsModule.render(document.querySelector('#prod-tabs .active').dataset.filter);
                 app.sidebar.renderDashboard();
                 app.toast('تم الحذف ✓');
@@ -1013,10 +1010,10 @@ const app = {
             };
             let isNew = false;
             const idx = app.categories.findIndex(x => x.id === id);
-            if(idx >= 0) app.categories[idx] = c;
-            else { app.categories.push(c); isNew = true; }
+            if(idx >= 0) updateCategory(id, c);
+            else { addCategory(c); isNew = true; }
             
-            localStorage.setItem('heru_categories', JSON.stringify(app.categories));
+            app.categories = getCategories();
             app.categoriesModule.render();
             app.productsModule.initTabsAndSelects(); // Re-render product form selects and filters
             document.getElementById('catModal').classList.remove('active');
@@ -1034,8 +1031,8 @@ const app = {
         },
         executeDel() {
             if(this.confirmDelId) {
-                app.categories = app.categories.filter(x => x.id !== this.confirmDelId);
-                localStorage.setItem('heru_categories', JSON.stringify(app.categories));
+                deleteCategory(this.confirmDelId);
+                app.categories = getCategories();
                 app.categoriesModule.render();
                 app.productsModule.initTabsAndSelects();
                 document.getElementById('catDeleteModal').classList.remove('active');
@@ -1046,9 +1043,9 @@ const app = {
         toggleActive(id) {
             const c = app.categories.find(x => x.id === id);
             if(c) {
-                c.is_active = !c.is_active;
-                localStorage.setItem('heru_categories', JSON.stringify(app.categories));
-                app.toast(c.is_active ? 'تم تفعيل المستودع' : 'تم إيقاف المستودع');
+                updateCategory(id, { is_active: !c.is_active });
+                app.categories = getCategories();
+                app.toast(!c.is_active ? 'تم تفعيل المستودع' : 'تم إيقاف المستودع');
             }
         }
     },
@@ -1123,14 +1120,8 @@ const app = {
             const newSt = document.getElementById('om-status-select').value;
             const o = app.orders.find(x => x.id === id);
             if(o && o.status !== newSt) {
-                o.status = newSt;
-                if(o.timeline) {
-                    const tlNode = o.timeline.find(t => t.status === newSt);
-                    if(tlNode && !tlNode.time) {
-                        tlNode.time = new Date().toLocaleString('ar-EG', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                    }
-                }
-                localStorage.setItem('heru_orders', JSON.stringify(app.orders));
+                updateOrderStatus(id, newSt);
+                app.orders = getOrders();
                 app.toast('تم تحديث حالة الطلب ✓');
                 app.ordersModule.render();
                 app.sidebar.renderDashboard();
@@ -1211,14 +1202,15 @@ const app = {
                         const newRes = (prod.reviews || 0) + 1;
                         prod.rating = (((prod.rating || 0) * (prod.reviews || 0)) + r.rating) / newRes;
                         prod.reviews = newRes;
-                        localStorage.setItem('heru_products', JSON.stringify(app.products));
+                        updateProduct(prod.id, {rating: prod.rating, reviews: prod.reviews});
+                        app.products = getProducts();
                     }
                 }
                 
                 if (isStore) {
-                    localStorage.setItem('heru_store_reviews', JSON.stringify(app.store_reviews));
+                    saveStoreReviews(list);
                 } else {
-                    localStorage.setItem('heru_reviews', JSON.stringify(app.reviews));
+                    saveReviews(list);
                 }
                 
                 this.render();
@@ -1231,7 +1223,7 @@ const app = {
                 app.store_reviews.forEach(r => {
                     if(!r.is_approved) r.is_approved = true;
                 });
-                localStorage.setItem('heru_store_reviews', JSON.stringify(app.store_reviews));
+                saveStoreReviews(app.store_reviews);
                 this.render();
                 app.sidebar.renderDashboard();
                 app.toast('تم القبول بنجاح ✓');
@@ -1243,10 +1235,10 @@ const app = {
                 
                 if (isStore) {
                     app.store_reviews = app.store_reviews.filter(x => x.id !== id);
-                    localStorage.setItem('heru_store_reviews', JSON.stringify(app.store_reviews));
+                    saveStoreReviews(app.store_reviews);
                 } else {
                     app.reviews = app.reviews.filter(x => x.id !== id);
-                    localStorage.setItem('heru_reviews', JSON.stringify(app.reviews));
+                    saveReviews(app.reviews);
                 }
                 
                 this.render();
@@ -1314,7 +1306,7 @@ const app = {
             if(idx >= 0) {
                 app.suggestions[idx].status = document.getElementById('sug-status').value;
                 app.suggestions[idx].admin_notes = document.getElementById('sug-notes').value;
-                localStorage.setItem('heru_suggestions', JSON.stringify(app.suggestions));
+                saveSuggestions(app.suggestions);
                 
                 this.render();
                 app.sidebar.renderDashboard();

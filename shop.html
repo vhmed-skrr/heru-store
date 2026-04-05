@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
+    <script src="/data.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المتجر — تصفح جميع المنتجات | Heru</title>
@@ -74,7 +75,7 @@
                     <!-- Filter 1: Categories -->
                     <div class="filter-group">
                         <h4 class="filter-title">التصنيف</h4>
-                        <div id="category-filters-container"></div>
+                        <div id="category-filters"></div>
                     </div>
 
                     <!-- Filter 2: Price Range -->
@@ -115,18 +116,13 @@
                 <!-- Search Bar -->
                 <div class="search-bar-wrapper">
                     <i data-lucide="search" class="search-icon"></i>
-                    <input type="text" id="shop-search" class="search-input" placeholder="ابحث عن منتج...">
-                    <span class="results-count" id="live-results-count"><span class="en-text">12</span> نتائج</span>
-                    <button class="search-clear hidden" id="search-clear" onclick="clearSearch()"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
+                    <input type="text" id="search-input" class="search-input" placeholder="ابحث عن منتج...">
+                    <span class="results-count" id="results-count"><span class="en-text">12</span> نتائج</span>
+                    <button class="search-clear hidden" id="search-clear" onclick="clearFilters()"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
                 </div>
 
                 <!-- Products Grid -->
-                <div id="shop-grid" class="grid-cols-3">
-                    <!-- Skeleton load immediately rendered -->
-                    <div class="product-card" style="padding: 16px;"><div class="skeleton skeleton-img" style="margin-block-end: 16px; border-radius: var(--radius-md);"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text skeleton-text-short"></div><div class="skeleton skeleton-btn" style="border-radius: var(--radius-md);"></div></div>
-                    <div class="product-card" style="padding: 16px;"><div class="skeleton skeleton-img" style="margin-block-end: 16px; border-radius: var(--radius-md);"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text skeleton-text-short"></div><div class="skeleton skeleton-btn" style="border-radius: var(--radius-md);"></div></div>
-                    <div class="product-card" style="padding: 16px;"><div class="skeleton skeleton-img" style="margin-block-end: 16px; border-radius: var(--radius-md);"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text skeleton-text-short"></div><div class="skeleton skeleton-btn" style="border-radius: var(--radius-md);"></div></div>
-                </div>
+                <div id="products-grid" class="grid-cols-3"></div>
                 
                 <!-- Empty State -->
                 <div id="empty-state" class="empty-state" style="display: none;">
@@ -192,11 +188,106 @@
             </div>
             <div class="footer-bottom">
                 <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+            
+                <div class="social-links">
+                    <a href="#" data-social="instagram" target="_blank" rel="noopener"><i data-lucide="instagram"></i></a>
+                    <a href="#" data-social="tiktok" target="_blank" rel="noopener"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>
+                    <a href="#" data-social="facebook" target="_blank" rel="noopener"><i data-lucide="facebook"></i></a>
+                </div>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Read URL params
+      const params = new URLSearchParams(window.location.search)
+      const catParam = params.get('cat') || ''
+      const qParam = params.get('q') || ''
+      
+      // Build category filters dynamically
+      const filtersContainer = 
+        document.getElementById('category-filters')
+      if (filtersContainer) {
+        const cats = getActiveCategories()
+        filtersContainer.innerHTML = cats.map(cat => {
+          const count = getProductsByCategory(cat.slug).length
+          return `
+            <label class="filter-checkbox">
+              <input type="checkbox" 
+                     value="${cat.slug}"
+                     ${catParam === cat.slug ? 'checked' : ''}>
+              <span>${cat.name_ar} (${count})</span>
+            </label>
+          `
+        }).join('')
+      }
+      
+      // Pre-fill search
+      const searchInput = document.getElementById('search-input')
+      if (searchInput && qParam) searchInput.value = qParam
+      
+      // Render products
+      renderFilteredProducts()
+      
+      // Attach filter events
+      document.querySelectorAll('#category-filters input')
+        .forEach(cb => cb.addEventListener('change', renderFilteredProducts))
+      
+      if (searchInput)
+        searchInput.addEventListener('input', renderFilteredProducts)
+    })
+
+    function renderFilteredProducts() {
+      const grid = document.getElementById('products-grid')
+      if (!grid) return
+      
+      let products = getProducts()
+      
+      // Search filter
+      const searchVal = document.getElementById('search-input')?.value || ''
+      if (searchVal) {
+        products = products.filter(p =>
+          p.name_ar.includes(searchVal) ||
+          p.name_en.toLowerCase().includes(searchVal.toLowerCase())
+        )
+      }
+      
+      // Category filter
+      const checked = [...document.querySelectorAll('#category-filters input:checked')]
+        .map(cb => cb.value)
+      if (checked.length > 0) {
+        products = products.filter(p => checked.includes(p.category))
+      }
+      
+      // Update count
+      const countEl = document.getElementById('results-count')
+      if (countEl) countEl.textContent = `${products.length} منتج`
+      
+      // Render
+      if (products.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <p>لم نجد منتجات بهذه المواصفات</p>
+            <button onclick="clearFilters()">مسح الفلاتر</button>
+          </div>
+        `
+        return
+      }
+      
+      grid.innerHTML = products.map(p => renderProductCard(p)).join('')
+      attachCardEvents()
+    }
+
+    function clearFilters() {
+      document.querySelectorAll('#category-filters input')
+        .forEach(cb => cb.checked = false)
+      const si = document.getElementById('search-input')
+      if (si) si.value = ''
+      renderFilteredProducts()
+    }
+    </script>
 </body>
 </html>

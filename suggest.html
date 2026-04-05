@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
+    <script src="/data.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>اقترح تصميمك — Heru</title>
@@ -82,11 +83,11 @@
         </div>
 
         <div id="suggest-form-wrapper">
-            <form id="suggestForm" style="background: var(--bg-elevated); padding: var(--space-8); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+            <form id="suggest-form" style="background: var(--bg-elevated); padding: var(--space-8); border-radius: var(--radius-lg); border: 1px solid var(--border);">
                 
                 <div class="form-group" style="margin-bottom: var(--space-4);">
                     <label class="form-label">تصنيف المنتج*</label>
-                    <select id="s-cat" class="form-input" required style="appearance:auto">
+                    <select id="suggest-category" class="form-input" required style="appearance:auto">
                         <option value="">اختار التصنيف</option>
                         <!-- Populated by JS -->
                     </select>
@@ -94,58 +95,50 @@
 
                 <div class="form-group" id="custom-cat-group" style="margin-bottom: var(--space-4); display: none;">
                     <label class="form-label">اسم التصنيف اللي عايزه*</label>
-                    <input type="text" id="s-custom-cat" class="form-input" placeholder="اكتب اسم التصنيف اللي عايزه">
+                    <input type="text" id="suggest-custom-cat" class="form-input" placeholder="اكتب اسم التصنيف اللي عايزه">
                 </div>
                 
                 <div class="form-group" style="margin-bottom: var(--space-4);">
                     <label class="form-label">اسمك*</label>
-                    <input type="text" id="s-name" class="form-input" placeholder="اسمك الكريم" required>
+                    <input type="text" id="suggest-name" class="form-input" placeholder="اسمك الكريم" required>
                 </div>
                 
                 <div class="form-group" style="margin-bottom: var(--space-4);">
                     <label class="form-label">رقم التواصل*</label>
-                    <input type="tel" id="s-phone" class="form-input" placeholder="01xxxxxxxxx" pattern="^01[0-9]{9}$" title="رقم هاتف مصري صحيح يبدأ بـ 01" dir="ltr" style="text-align: right;" required>
+                    <input type="tel" id="suggest-phone" class="form-input" placeholder="01xxxxxxxxx" pattern="^01[0-9]{9}$" title="رقم هاتف مصري صحيح يبدأ بـ 01" dir="ltr" style="text-align: right;" required>
                 </div>
 
                 <div class="form-group" style="margin-bottom: var(--space-4);">
                     <label class="form-label">وصف التصميم*</label>
-                    <textarea id="s-desc" class="form-input" placeholder="وصّف التصميم اللي عايزه... مثلاً: لوحة بألوان داكنة فيها صورة مغني مع كلمات أغنية معينة" rows="5" minlength="20" maxlength="1000" required></textarea>
-                    <div style="display: flex; justify-content: flex-end; font-size: 12px; color: var(--text-muted); margin-top: 8px;">
-                        <span id="char-counter" class="en-text">0 / 1000</span>
-                    </div>
+                    <textarea id="suggest-desc" class="form-input" placeholder="وصّف التصميم اللي عايزه... مثلاً: لوحة بألوان داكنة فيها صورة مغني مع كلمات أغنية معينة" rows="5" minlength="20" maxlength="1000" required></textarea>
                 </div>
 
                 <div class="form-group" style="margin-bottom: var(--space-6);">
                     <label class="form-label">صورة مرجعية (اختياري)</label>
-                    <div class="file-upload-area" id="s-upload-area" onclick="document.getElementById('s-file').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleDrop(event)">
+                    <div class="file-upload-area" id="suggest-upload-area" onclick="document.getElementById('suggest-image').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleDrop(event)">
                         <div id="upload-content">
                             <i data-lucide="image" style="width:32px; height:32px; color:var(--text-muted); margin-bottom:12px;"></i>
                             <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">اسحب صورة هنا أو اضغط للاختيار</div>
                             <div style="font-size: 14px; color: var(--text-muted);">JPG, PNG أو GIF — حد أقصى 5MB</div>
                         </div>
-                        <input type="file" id="s-file" accept="image/jpeg, image/png, image/gif, image/webp" style="display:none;" onchange="handleFileSelect(event)">
+                        <input type="file" id="suggest-image" accept="image/jpeg, image/png, image/gif, image/webp" style="display:none;" onchange="handleFileSelect(event)">
                     </div>
                 </div>
 
-                <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; height: 52px; font-size: 18px;" disabled>إرسال الاقتراح ✦</button>
+                <button type="button" id="suggest-submit-btn" 
+                        onclick="submitSuggestion()">
+                  إرسال الاقتراح ✦
+                </button>
             </form>
         </div>
 
-        <div id="success-wrapper" style="display: none;">
-            <div class="success-state">
-                <div style="margin-bottom: 24px;">
-                    <svg class="check-anim" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 64px; height: 64px; margin: 0 auto;">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </div>
-                <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">وصلنا اقتراحك! 🎉</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 32px; font-size: 16px; line-height: 1.6;">هنراجعه وهنتواصل معاك على رقمك قريباً</p>
-                
-                <div style="display: flex; gap: 16px; justify-content: center;">
-                    <a href="/" class="btn btn-ghost">العودة للرئيسية</a>
-                    <a href="/shop" class="btn btn-primary">تسوق دلوقتي</a>
-                </div>
-            </div>
+        <div id="suggest-success" style="display:none" 
+             class="success-state">
+          <div class="checkmark-animation">✓</div>
+          <h2>وصلنا اقتراحك! 🎉</h2>
+          <p>هنراجعه وهنتواصل معاك على رقمك قريباً</p>
+          <a href="/" class="btn-primary">العودة للرئيسية</a>
+          <a href="/shop" class="btn-ghost">تسوق دلوقتي</a>
         </div>
         
     </main>
@@ -168,6 +161,12 @@
             </div>
             <div class="footer-bottom">
                 <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+            
+                <div class="social-links">
+                    <a href="#" data-social="instagram" target="_blank" rel="noopener"><i data-lucide="instagram"></i></a>
+                    <a href="#" data-social="tiktok" target="_blank" rel="noopener"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>
+                    <a href="#" data-social="facebook" target="_blank" rel="noopener"><i data-lucide="facebook"></i></a>
+                </div>
             </div>
         </div>
     </footer>
@@ -196,7 +195,7 @@
             e.stopPropagation();
             imageBase64Data = null;
             imageFileName = null;
-            document.getElementById('s-file').value = '';
+            document.getElementById('suggest-image').value = '';
             document.getElementById('upload-content').innerHTML = `
                 <i data-lucide="image" style="width:32px; height:32px; color:var(--text-muted); margin-bottom:12px;"></i>
                 <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">اسحب صورة هنا أو اضغط للاختيار</div>
@@ -231,7 +230,7 @@
 
         function handleDrop(e) {
             e.preventDefault();
-            document.getElementById('s-upload-area').style.borderColor = 'var(--border)';
+            document.getElementById('suggest-upload-area').style.borderColor = 'var(--border)';
             if(e.dataTransfer.files && e.dataTransfer.files[0]) {
                 processFile(e.dataTransfer.files[0]);
             }
@@ -240,102 +239,124 @@
         document.addEventListener('DOMContentLoaded', () => {
             if(window.lucide) lucide.createIcons();
             
-            const catSelect = document.getElementById('s-cat');
-            const customCatGroup = document.getElementById('custom-cat-group');
-            const customCatInput = document.getElementById('s-custom-cat');
-            const descObj = document.getElementById('s-desc');
-            const counterObj = document.getElementById('char-counter');
-            const submitBtn = document.getElementById('submitBtn');
-            const nameObj = document.getElementById('s-name');
-            const phoneObj = document.getElementById('s-phone');
+            const catSelect = document.getElementById('suggest-category');
+            if (catSelect) {
+                const cats = getActiveCategories()
+                cats.forEach(cat => {
+                    const opt = document.createElement('option')
+                    opt.value = cat.slug
+                    opt.textContent = cat.name_ar
+                    catSelect.appendChild(opt)
+                })
+                const otherOpt = document.createElement('option');
+                otherOpt.value = 'other';
+                otherOpt.textContent = 'تصنيف تاني (اكتب)';
+                catSelect.appendChild(otherOpt);
 
-            let cats = [];
-            try { cats = JSON.parse(localStorage.getItem('heru_categories') || '[]'); } catch(e){}
-            
-            cats.filter(c => c.is_active).forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.name_ar;
-                opt.textContent = c.name_ar;
-                catSelect.appendChild(opt);
-            });
-            const otherOpt = document.createElement('option');
-            otherOpt.value = 'other';
-            otherOpt.textContent = 'تصنيف تاني (اكتب)';
-            catSelect.appendChild(otherOpt);
-
-            catSelect.addEventListener('change', () => {
-                if(catSelect.value === 'other') {
-                    customCatGroup.style.display = 'block';
-                    customCatInput.required = true;
-                } else {
-                    customCatGroup.style.display = 'none';
-                    customCatInput.required = false;
-                    customCatInput.value = '';
-                }
-                validateForm();
-            });
-
-            const validateForm = () => {
-                const c = catSelect.value;
-                const cust = customCatInput.value.trim();
-                const n = nameObj.value.trim();
-                const p = phoneObj.value.trim();
-                const d = descObj.value.trim();
-                
-                counterObj.textContent = `${d.length} / 1000`;
-                
-                let isValid = true;
-                if(!c) isValid = false;
-                if(c === 'other' && !cust) isValid = false;
-                if(!n) isValid = false;
-                if(!/^01[0-9]{9}$/.test(p)) isValid = false;
-                if(d.length < 20 || d.length > 1000) isValid = false;
-                
-                submitBtn.disabled = !isValid;
-            };
-
-            ['keyup', 'change', 'input'].forEach(evt => {
-                nameObj.addEventListener(evt, validateForm);
-                phoneObj.addEventListener(evt, validateForm);
-                descObj.addEventListener(evt, validateForm);
-                customCatInput.addEventListener(evt, validateForm);
-            });
-
-            document.getElementById('suggestForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                if(submitBtn.disabled) return;
-                
-                const c = catSelect.value;
-                const cust = customCatInput.value.trim();
-                
-                let suggestions = [];
-                try {
-                    suggestions = JSON.parse(localStorage.getItem('heru_suggestions') || '[]');
-                } catch(err) {}
-                
-                const payload = {
-                    id: "sug_" + Date.now(),
-                    category: c === 'other' ? cust : c,
-                    custom_category: c === 'other' ? cust : "",
-                    name: nameObj.value.trim(),
-                    phone: phoneObj.value.trim(),
-                    description: descObj.value.trim(),
-                    image_base64: imageBase64Data,
-                    image_name: imageFileName,
-                    status: "new",
-                    admin_notes: "",
-                    created_at: new Date().toISOString()
-                };
-                
-                suggestions.push(payload);
-                localStorage.setItem('heru_suggestions', JSON.stringify(suggestions));
-                
-                document.getElementById('suggest-form-wrapper').style.display = 'none';
-                document.getElementById('suggest-header').style.display = 'none';
-                document.getElementById('success-wrapper').style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+                catSelect.addEventListener('change', () => {
+                    const customCatGroup = document.getElementById('custom-cat-group');
+                    const customCatInput = document.getElementById('suggest-custom-cat');
+                    if(catSelect.value === 'other') {
+                        customCatGroup.style.display = 'block';
+                        customCatInput.required = true;
+                    } else {
+                        customCatGroup.style.display = 'none';
+                        customCatInput.required = false;
+                        customCatInput.value = '';
+                    }
+                });
+            }
         });
+
+        function submitSuggestion() {
+          // Get all field values
+          const category = document.getElementById('suggest-category')?.value
+          const customCat = document.getElementById('suggest-custom-cat')?.value
+          const name = document.getElementById('suggest-name')?.value?.trim()
+          const phone = document.getElementById('suggest-phone')?.value?.trim()
+          const description = document.getElementById('suggest-desc')?.value?.trim()
+          
+          // Validate
+          let hasError = false
+          
+          if (!category) {
+            showFieldError('suggest-category', 'اختار التصنيف')
+            hasError = true
+          }
+          if (!name) {
+            showFieldError('suggest-name', 'اكتب اسمك')
+            hasError = true
+          }
+          if (!phone || !/^01[0125][0-9]{8}$/.test(phone)) {
+            showFieldError('suggest-phone', 'رقم الهاتف غير صحيح')
+            hasError = true
+          }
+          if (!description || description.length < 20) {
+            showFieldError('suggest-desc', 
+              'الوصف قصير جداً — اكتب على الأقل 20 حرف')
+            hasError = true
+          }
+          
+          if (hasError) return
+          
+          // Get image if provided
+          const imageInput = document.getElementById('suggest-image')
+          let imageBase64 = null
+          let imageName = null
+          
+          function saveAndSubmit(b64, fname) {
+            const suggestion = {
+              category: category === 'other' 
+                ? (customCat || 'تصنيف جديد') 
+                : category,
+              name: name,
+              phone: phone,
+              description: description,
+              image_base64: b64,
+              image_name: fname,
+              status: "new",
+              admin_notes: ""
+            }
+            
+            addSuggestion(suggestion)
+            
+            // Show success state
+            document.getElementById('suggest-form')
+              .style.display = 'none'
+            document.getElementById('suggest-success')
+              .style.display = 'block'
+          }
+          
+          if (imageInput?.files?.[0]) {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+              saveAndSubmit(e.target.result, imageInput.files[0].name)
+            }
+            reader.readAsDataURL(imageInput.files[0])
+          } else {
+            saveAndSubmit(null, null)
+          }
+        }
+
+        function showFieldError(fieldId, message) {
+          const field = document.getElementById(fieldId)
+          if (!field) return
+          let error = field.parentNode.querySelector('.field-error')
+          if (!error) {
+            error = document.createElement('p')
+            error.className = 'field-error'
+            error.style.color = 'var(--error)'
+            error.style.fontSize = '13px'
+            error.style.marginTop = '4px'
+            field.parentNode.appendChild(error)
+          }
+          error.textContent = message
+          field.style.borderColor = 'var(--error)'
+          field.addEventListener('input', function() {
+            error.textContent = ''
+            field.style.borderColor = ''
+          }, {once: true})
+        }
     </script>
 </body>
 </html>
