@@ -2096,3 +2096,15 @@ input[type="tel"] {
   text-align: right;
 }
 
+
+.footer-socials {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-socials a:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}

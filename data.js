@@ -514,23 +514,27 @@ function applySettingsToPage() {
                 (msg ? `?text=${encodeURIComponent(msg)}` : '')
     })
   
-  const ig = document.querySelector('[data-social="instagram"]')
-  if (ig) {
-    ig.href = s.instagram || '#'
-    ig.style.display = s.instagram ? 'inline-flex' : 'none'
-  }
-  
-  const tt = document.querySelector('[data-social="tiktok"]')
-  if (tt) {
-    tt.href = s.tiktok || '#'
-    tt.style.display = s.tiktok ? 'inline-flex' : 'none'
-  }
-  
-  const fb = document.querySelector('[data-social="facebook"]')
-  if (fb) {
-    fb.href = s.facebook || '#'
-    fb.style.display = s.facebook ? 'inline-flex' : 'none'
-  }
+  const socials = ['instagram', 'tiktok', 'facebook']
+  socials.forEach(platform => {
+    const el = document.querySelector(`[data-social="${platform}"]`)
+    if (!el) return
+    
+    const url = s[platform]
+    if (url && url.trim() !== '') {
+      el.href = url
+      el.style.display = 'inline-flex'
+      el.style.alignItems = 'center'
+      el.style.justifyContent = 'center'
+      el.style.width = '38px'
+      el.style.height = '38px'
+      el.style.borderRadius = '8px'
+      el.style.border = '1px solid var(--border)'
+      el.style.color = 'var(--text-secondary)'
+      el.style.transition = 'all 200ms'
+    } else {
+      el.style.display = 'none'
+    }
+  })
 }
 
 // ─────────────────────────────
