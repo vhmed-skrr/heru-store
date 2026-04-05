@@ -63,6 +63,16 @@
         .dropzone { border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg-default); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px; }
         .dropzone:hover { border-color: var(--accent); background: var(--bg-elevated); }
         .img-slot-wrapper { background: var(--bg-elevated); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--border); }
+        
+        .attribute-row {
+          display: flex; gap: 8px; align-items: center; margin-bottom: 8px; animation: fadeIn 200ms ease;
+        }
+        .attribute-row input {
+          flex: 1; padding: 10px 12px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Cairo', sans-serif; font-size: 14px;
+        }
+        .attribute-row input:focus { border-color: var(--accent); outline: none; }
+        .attr-delete-btn { width: 34px; height: 34px; background: none; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; color: var(--text-muted); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 200ms; flex-shrink: 0; }
+        .attr-delete-btn:hover { border-color: var(--error); color: var(--error); background: rgba(255,68,68,0.1); }
     </style>
 
 <style>
@@ -473,7 +483,17 @@ body { top: 0 !important; }
                 <label class="form-label">الوصف</label>
                 <textarea id="p-desc" class="form-input" rows="3"></textarea>
                 
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                <!-- ATTRIBUTES SECTION -->
+                <div class="form-section">
+                  <div class="form-section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; margin-top:24px;">
+                    <label class="form-label" style="margin:0;">تفاصيل المنتج (اختياري)</label>
+                    <button type="button" onclick="app.productsModule.addAttribute()" class="btn btn-ghost" style="height:32px; padding:0 12px; border:1px solid var(--accent); color:var(--accent);">+ إضافة تفصيلة</button>
+                  </div>
+                  <div id="attributes-container"></div>
+                  <p style="color:var(--text-muted); font-size:12px; margin-top:8px;">مثال: المقاس → A4 | الخامة → ورق فاخر. يمكن تركها فارغة.</p>
+                </div>
+                
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; margin-top:24px;">
                     <label class="toggle-switch">
                         <input type="checkbox" id="p-feat">
                         <span class="toggle-slider"></span>
@@ -930,8 +950,40 @@ const app = {
                 `;
             }
             document.getElementById('modal-title').textContent = 'إضافة منتج';
+            this.loadAttributesToForm([]);
             document.getElementById('prodModal').classList.add('active');
             if(window.lucide) lucide.createIcons();
+        },
+        addAttribute(title = '', value = '') {
+            const container = document.getElementById('attributes-container');
+            if (!container) return;
+            const index = container.children.length;
+            const row = document.createElement('div');
+            row.className = 'attribute-row';
+            row.dataset.index = index;
+            row.innerHTML = `
+              <input type="text" placeholder="العنوان (مثال: المقاس)" class="attr-title" value="${title}" maxlength="50">
+              <input type="text" placeholder="القيمة (مثال: A4)" class="attr-value" value="${value}" maxlength="100">
+              <button type="button" class="attr-delete-btn" onclick="this.closest('.attribute-row').remove()" title="حذف">×</button>
+            `;
+            container.appendChild(row);
+        },
+        getFormAttributes() {
+            const rows = document.querySelectorAll('#attributes-container .attribute-row');
+            const attrs = [];
+            rows.forEach(row => {
+                const title = row.querySelector('.attr-title')?.value?.trim();
+                const value = row.querySelector('.attr-value')?.value?.trim();
+                if (title && value) attrs.push({title, value});
+            });
+            return attrs;
+        },
+        loadAttributesToForm(attributes) {
+            const container = document.getElementById('attributes-container');
+            if (!container) return;
+            container.innerHTML = '';
+            if (!attributes || attributes.length === 0) return;
+            attributes.forEach(attr => this.addAttribute(attr.title, attr.value));
         },
         edit(id) {
             const p = app.products.find(x => x.id === id);
@@ -958,6 +1010,7 @@ const app = {
             document.getElementById('p-desc').value = p.description_ar || '';
             document.getElementById('p-feat').checked = p.is_featured;
             document.getElementById('modal-title').textContent = 'تعديل المنتج';
+            this.loadAttributesToForm(p.attributes || []);
             document.getElementById('prodModal').classList.add('active');
             if(window.lucide) lucide.createIcons();
         },
@@ -979,6 +1032,7 @@ const app = {
                 description_ar: document.getElementById('p-desc').value,
                 images: images,
                 img: images.length > 0 ? images[0] : '',
+                attributes: this.getFormAttributes(),
                 is_featured: document.getElementById('p-feat').checked
             };
             const idx = app.products.findIndex(x => x.id === id);

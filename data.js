@@ -8,73 +8,141 @@ const DEFAULT_PRODUCTS = [
    price:85, category:"poster", stock:15,
    is_featured:true, rating:4.8, reviews:46,
    images:[], 
-   description_ar:"لوحة فنية بتصميم عصري مستوحى من أجواء الموسيقى الحضرية"},
+   description_ar:"لوحة فنية بتصميم عصري مستوحى من أجواء الموسيقى الحضرية",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق فاخر 200 جرام"},
+     {title:"طريقة الطباعة", value:"طباعة رقمية"}
+   ]},
   {id:"p2", name_ar:"لوحة - ليل القاهرة",
    name_en:"Cairo Night Poster",
    price:70, category:"poster", stock:8,
    is_featured:false, rating:5.0, reviews:23,
    images:[],
-   description_ar:"تصميم يلتقط روح ليالي القاهرة الصاخبة"},
+   description_ar:"تصميم يلتقط روح ليالي القاهرة الصاخبة",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق فاخر 200 جرام"},
+     {title:"طريقة الطباعة", value:"طباعة رقمية"}
+   ]},
   {id:"p3", name_ar:"لوحة - روح الجاز",
    name_en:"Jazz Soul Poster",
    price:90, category:"poster", stock:3,
    is_featured:false, rating:4.5, reviews:17,
    images:[],
-   description_ar:"لوحة مستوحاة من الأجواء الكلاسيكية لموسيقى الجاز"},
+   description_ar:"لوحة مستوحاة من الأجواء الكلاسيكية لموسيقى الجاز",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق فاخر 200 جرام"},
+     {title:"طريقة الطباعة", value:"طباعة رقمية"}
+   ]},
   {id:"p4", name_ar:"لوحة - ألوان الفجر",
    name_en:"Dawn Colors Poster",
    price:75, category:"poster", stock:12,
    is_featured:true, rating:4.6, reviews:31,
    images:[],
-   description_ar:"تصميم بألوان دافئة ومؤثرة"},
+   description_ar:"تصميم بألوان دافئة ومؤثرة",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق فاخر 200 جرام"},
+     {title:"طريقة الطباعة", value:"طباعة رقمية"}
+   ]},
   {id:"n1", name_ar:"نوت بوك - ويكيند ووريور",
    name_en:"Weekend Warrior Notebook",
    price:75, category:"notebook", stock:20,
    is_featured:true, rating:4.9, reviews:58,
    images:[],
-   description_ar:"دفتر أنيق مثالي للأفكار اليومية"},
+   description_ar:"دفتر أنيق مثالي للأفكار اليومية",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق 90 جرام"},
+     {title:"عدد الأوراق", value:"100 ورقة"},
+     {title:"نوع التجليد", value:"سلك مزدوج"}
+   ]},
   {id:"n2", name_ar:"نوت بوك - كلمات وألوان",
    name_en:"Words & Colors Notebook",
    price:65, category:"notebook", stock:25,
    is_featured:false, rating:4.6, reviews:29,
    images:[],
-   description_ar:"دفتر بتصميم ملون وحيوي"},
+   description_ar:"دفتر بتصميم ملون وحيوي",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق 90 جرام"},
+     {title:"عدد الأوراق", value:"100 ورقة"},
+     {title:"نوع التجليد", value:"سلك مزدوج"}
+   ]},
   {id:"n3", name_ar:"نوت بوك - الفن الحر",
    name_en:"Free Art Notebook",
    price:70, category:"notebook", stock:18,
    is_featured:false, rating:4.9, reviews:41,
    images:[],
-   description_ar:"للعقول الإبداعية التي لا تعرف الحدود"},
+   description_ar:"للعقول الإبداعية التي لا تعرف الحدود",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق 90 جرام"},
+     {title:"عدد الأوراق", value:"100 ورقة"},
+     {title:"نوع التجليد", value:"سلك مزدوج"}
+   ]},
   {id:"n4", name_ar:"نوت بوك - يوميات شارع",
    name_en:"Street Diary Notebook",
    price:60, category:"notebook", stock:30,
    is_featured:false, rating:4.7, reviews:22,
    images:[],
-   description_ar:"سجّل أفكارك بأسلوب المدينة"},
+   description_ar:"سجّل أفكارك بأسلوب المدينة",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق 90 جرام"},
+     {title:"عدد الأوراق", value:"100 ورقة"},
+     {title:"نوع التجليد", value:"سلك مزدوج"}
+   ]},
   {id:"s1", name_ar:"كشكول - أسود بلا عنوان",
    name_en:"Untitled Black Sketchbook",
    price:90, category:"sketchbook", stock:10,
    is_featured:true, rating:4.7, reviews:35,
    images:[],
-   description_ar:"كشكول سلك بتصميم غامض وجذاب"},
+   description_ar:"كشكول سلك بتصميم غامض وجذاب",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق 90 جرام"},
+     {title:"عدد الأوراق", value:"100 ورقة"},
+     {title:"نوع التجليد", value:"سلك مزدوج"}
+   ]},
   {id:"s2", name_ar:"كشكول - ذكريات الأسفلت",
    name_en:"Asphalt Memories Sketchbook",
    price:95, category:"sketchbook", stock:7,
    is_featured:false, rating:4.8, reviews:19,
    images:[],
-   description_ar:"مستوحى من شوارع وأزقة المدينة"},
+   description_ar:"مستوحى من شوارع وأزقة المدينة",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق 90 جرام"},
+     {title:"عدد الأوراق", value:"100 ورقة"},
+     {title:"نوع التجليد", value:"سلك مزدوج"}
+   ]},
   {id:"s3", name_ar:"كشكول - نبضات الشارع",
    name_en:"Street Pulse Sketchbook",
    price:85, category:"sketchbook", stock:14,
    is_featured:false, rating:4.8, reviews:27,
    images:[],
-   description_ar:"التقط نبض الشارع في كل صفحة"},
+   description_ar:"التقط نبض الشارع في كل صفحة",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق 90 جرام"},
+     {title:"عدد الأوراق", value:"100 ورقة"},
+     {title:"نوع التجليد", value:"سلك مزدوج"}
+   ]},
   {id:"s4", name_ar:"كشكول - سكتش فري",
    name_en:"Sketch Free Sketchbook",
    price:80, category:"sketchbook", stock:0,
    is_featured:false, rating:4.6, reviews:15,
    images:[],
-   description_ar:"كشكول بورق عالي الجودة للرسم الحر"}
+   description_ar:"كشكول بورق عالي الجودة للرسم الحر",
+   attributes: [
+     {title:"المقاس", value:"A4 (21×29.7 سم)"},
+     {title:"المادة", value:"ورق 90 جرام"},
+     {title:"عدد الأوراق", value:"100 ورقة"},
+     {title:"نوع التجليد", value:"سلك مزدوج"}
+   ]}
 ]
 
 const DEFAULT_CATEGORIES = [
@@ -276,6 +344,10 @@ function addProduct(product) {
   const products = getProducts()
   product.id = "p_" + Date.now()
   product.created_at = new Date().toISOString()
+  // Ensure attributes exists
+  if (!product.attributes) product.attributes = []
+  // Ensure images exists  
+  if (!product.images) product.images = []
   products.push(product)
   saveProducts(products)
   return product
@@ -537,11 +609,44 @@ function applySettingsToPage() {
   })
 }
 
+function migrateProducts() {
+  const migrated = localStorage.getItem('heru_products_migrated_v2')
+  if (migrated) return
+  
+  const products = getProducts()
+  const updated = products.map(p => {
+    if (!p.attributes) {
+      if (p.category === 'poster') {
+        p.attributes = [
+          {title:"المقاس", value:"A4 (21×29.7 سم)"},
+          {title:"المادة", value:"ورق فاخر 200 جرام"},
+          {title:"طريقة الطباعة", value:"طباعة رقمية عالية الجودة"}
+        ]
+      } else if (p.category === 'notebook' || p.category === 'sketchbook') {
+        p.attributes = [
+          {title:"المقاس", value:"A4 (21×29.7 سم)"},
+          {title:"المادة", value:"ورق 90 جرام"},
+          {title:"عدد الأوراق", value:"100 ورقة"},
+          {title:"نوع التجليد", value:"سلك مزدوج"}
+        ]
+      } else {
+        p.attributes = []
+      }
+    }
+    if (!p.images) p.images = []
+    return p
+  })
+  
+  saveProducts(updated)
+  localStorage.setItem('heru_products_migrated_v2', '1')
+}
+
 // ─────────────────────────────
 // RUN ON EVERY PAGE
 // ─────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   initStore()
+  migrateProducts()
   applySettingsToPage()
   updateCartBadge()
   initTheme()
@@ -617,9 +722,14 @@ function attachCardEvents() {
 }
 
 function showToast(message, type = 'info') {
+  const cleanMessage = String(message)
+    .replace(/\\n/g, ' ')
+    .replace(/\n/g, ' ')
+    .trim()
+  
   const toast = document.createElement('div')
   toast.className = `toast toast-${type}`
-  toast.textContent = message
+  toast.textContent = cleanMessage
   toast.style.cssText = `
     position:fixed; bottom:24px; 
     inset-inline-start:24px; z-index:9999;
