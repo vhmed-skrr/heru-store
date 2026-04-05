@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heru Admin - التقييمات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-nav-brand">Heru Admin</div>
+            <a href="/admin/dashboard.html" class="admin-nav-link"><i data-lucide="bar-chart-2"></i> الإحصائيات</a>
+            <a href="/admin/orders.html" class="admin-nav-link"><i data-lucide="package"></i> الطلبات</a>
+            <a href="/admin/products.html" class="admin-nav-link"><i data-lucide="shopping-bag"></i> المنتجات</a>
+            <a href="/admin/reviews.html" class="admin-nav-link active"><i data-lucide="star"></i> التقييمات</a>
+            <div style="flex:1"></div>
+            <button class="admin-nav-link" style="border:none; width:100%; justify-content:start; font-family:inherit; font-size:inherit; cursor:pointer;" onclick="window.logoutAdmin()"><i data-lucide="log-out"></i> تسجيل الخروج</button>
+        </aside>
+
+        <div class="admin-mobile-header" style="display:none">
+            <div class="admin-nav-brand" style="margin:0; padding:0">Heru Admin</div>
+            <button class="hamburger-admin" onclick="document.getElementById('adminSidebar').classList.toggle('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+
+        <main class="admin-main" id="admin-reviews-root">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-block-end:var(--space-6)">
+                <h1>إدارة التقييمات</h1>
+                <button class="btn btn-primary" id="bulk-approve-btn" onclick="bulkApproveReviews()" style="display:none">قبول الكل ✓</button>
+            </div>
+            
+            <div class="admin-tabs" id="reviews-status-tabs">
+                <button class="admin-tab active" data-status="pending">بانتظار الموافقة (<span id="rev-pending-cnt" class="en-text">0</span>)</button>
+                <button class="admin-tab" data-status="approved">تمت الموافقة (<span id="rev-approved-cnt" class="en-text">0</span>)</button>
+            </div>
+
+            <div id="reviews-container" style="display:flex; flex-direction:column; gap:var(--space-4)"></div>
+        </main>
+    </div>
+
+    <!-- Review Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteReviewModal">
+        <div class="modal-content" style="max-width: 400px; text-align:center;">
+            <h2 style="color:var(--error); margin-block-end:var(--space-2)">حذف التقييم؟</h2>
+            <p style="color:var(--text-secondary); margin-block-end:var(--space-6)">هل أنت متأكد من حذف هذا التقييم؟</p>
+            <div style="display:flex; gap:var(--space-4)">
+                <button id="btn-confirm-review-delete" class="btn" style="flex:1; background:var(--error); color:#fff">حذف</button>
+                <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal('deleteReviewModal')">تراجع</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

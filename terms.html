@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شروط الاستخدام | Heru</title>
+    <meta name="description" content="شروط الاستخدام لمتجر هيرو">
+    <meta property="og:site_name" content="Heru">
+    <meta property="og:locale" content="ar_EG">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="/settings.js"></script>
+    
+    <style>
+        .doc-section { margin-block-end: var(--space-8); }
+        .doc-heading { font-size: var(--text-xl); font-weight: 700; color: var(--accent); margin-block-end: var(--space-4); }
+        .doc-text { font-size: var(--text-base); color: var(--text-secondary); line-height: 1.8; }
+        .doc-text ul { padding-inline-start: var(--space-6); margin-block-start: var(--space-2); }
+        .doc-text li { margin-block-end: var(--space-2); }
+    </style>
+</head>
+<body class="page-enter">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand" data-store-name>Heru</a>
+        <ul class="nav-links">
+            <li><a href="/">الرئيسية</a></li>
+            <li><a href="/shop.html">المتجر</a></li>
+            <li><a href="/track-order.html">تتبع طلبي</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="icon-btn" title="تغيير اللغة">
+                <span class="en-text" style="font-weight: 700; font-size: 14px;">AR</span>
+            </button>
+            <a href="/cart.html" class="icon-btn cart-trigger" title="السلة">
+                <i data-lucide="shopping-cart"></i>
+                <span class="cart-badge hidden">0</span>
+            </a>
+            <button class="icon-btn hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="icon-btn" onclick="document.getElementById('mobileMenu').classList.remove('open')" style="align-self: flex-end;">
+            <i data-lucide="x"></i>
+        </button>
+        <div style="display: flex; flex-direction: column; gap: var(--space-6); font-size: var(--text-xl); font-weight: 700;">
+            <a href="/" style="color: var(--text-primary); text-decoration: none;">الرئيسية</a>
+            <a href="/shop.html" style="color: var(--text-primary); text-decoration: none;">المتجر</a>
+            <a href="/track-order.html" style="color: var(--text-primary); text-decoration: none;">تتبع طلبي</a>
+        </div>
+    </div>
+
+    <!-- MAIN TERMS CONTAINER -->
+    <main class="container page-content" style="max-width: 800px; padding-top: var(--space-8); padding-bottom: var(--space-12); min-height: 70vh;">
+        <h1 style="font-size: var(--text-3xl); font-weight: 900; margin-block-end: var(--space-10);">شروط الاستخدام</h1>
+        
+        <div class="doc-section">
+            <h2 class="doc-heading">1. القبول بالشروط</h2>
+            <div class="doc-text">
+                باستخدام متجر Heru فأنت توافق على هذه الشروط والأحكام.
+            </div>
+        </div>
+        
+        <div class="doc-section">
+            <h2 class="doc-heading">2. المنتجات والأسعار</h2>
+            <div class="doc-text">
+                <ul>
+                    <li>الأسعار بالجنيه المصري</li>
+                    <li>نحتفظ بحق تغيير الأسعار</li>
+                    <li>الصور توضيحية والمنتج قد يختلف قليلاً</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="doc-section">
+            <h2 class="doc-heading">3. الطلبات والتوصيل</h2>
+            <div class="doc-text">
+                <ul>
+                    <li>الطلبات عبر واتساب فقط</li>
+                    <li>التوصيل داخل مصر فقط</li>
+                    <li>مدة التوصيل <span class="en-text">2-5</span> أيام عمل</li>
+                    <li>الشحن مجاني لجميع المحافظات</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="doc-section">
+            <h2 class="doc-heading">4. طرق الدفع</h2>
+            <div class="doc-text">
+                <ul>
+                    <li>الدفع عند الاستلام (كاش)</li>
+                    <li>انستاباي</li>
+                    <li>لا نقبل أي طرق دفع أخرى</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="doc-section">
+            <h2 class="doc-heading">5. الإلغاء والاستبدال</h2>
+            <div class="doc-text">
+                <ul>
+                    <li>يمكن إلغاء الطلب قبل الشحن</li>
+                    <li>الاستبدال في حالة وجود عيب مصنعي</li>
+                    <li>التواصل عبر واتساب لأي مشكلة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="doc-section">
+            <h2 class="doc-heading">6. الملكية الفكرية</h2>
+            <div class="doc-text">
+                جميع تصاميم Heru محمية. يُمنع نسخها أو استخدامها بدون إذن.
+            </div>
+        </div>
+
+        <div class="doc-section" style="margin-block-start: var(--space-10);">
+            <h2 class="doc-heading">7. تواصل معنا</h2>
+            <div class="doc-text">
+                <a href="https://wa.me/201124519232" data-whatsapp data-whatsapp-msg="مرحباً، لدي استفسار بخصوص شروط الاستخدام" target="_blank" class="btn btn-whatsapp" style="display:inline-flex; align-items:center; gap:var(--space-2); height:48px; font-size:16px;">
+                    تواصل معنا 💬
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand" data-store-name>Heru</div>
+                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/shop.html">المتجر</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">معلومات</h4>
+                    <ul class="footer-links">
+                        <li><a href="/privacy">سياسة الخصوصية</a></li>
+                        <li><a href="/terms">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</body>
+</html>

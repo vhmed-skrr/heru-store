@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اقترح تصميمك — Heru</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="/settings.js"></script>
+    <style>
+        .suggest-container {
+            max-width: 600px;
+            margin: var(--space-12) auto;
+            position: relative;
+        }
+        .success-state {
+            text-align: center;
+            padding: var(--space-8);
+            background: var(--bg-elevated);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-default);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .file-upload-area:hover {
+            border-color: var(--accent);
+            background: var(--bg-elevated);
+        }
+    </style>
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 1. Navbar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand" data-store-name>Heru</a>
+        <ul class="nav-links">
+            <li><a href="/">الرئيسية</a></li>
+            <li><a href="/shop">المتجر</a></li>
+            <li><a href="#">تتبع طلبي</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر"><i data-lucide="moon"></i></button>
+            <button class="icon-btn" title="تغيير اللغة"><span class="en-text" style="font-weight: 700; font-size: 14px;">AR</span></button>
+            <button class="icon-btn cart-trigger" title="السلة"><i data-lucide="shopping-cart"></i><span class="cart-badge hidden">0</span></button>
+            <button class="icon-btn hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')"><i data-lucide="menu"></i></button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="icon-btn" onclick="document.getElementById('mobileMenu').classList.remove('open')" style="align-self: flex-end;"><i data-lucide="x"></i></button>
+        <div style="display: flex; flex-direction: column; gap: var(--space-6); font-size: var(--text-xl); font-weight: 700;">
+            <a href="/" style="color: var(--text-primary); text-decoration: none;">الرئيسية</a>
+            <a href="/shop" style="color: var(--text-primary); text-decoration: none;">المتجر</a>
+            <a href="#" style="color: var(--text-primary); text-decoration: none;">تتبع طلبي</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container suggest-container">
+        
+        <div id="suggest-header" style="text-align: center; margin-bottom: var(--space-8);">
+            <h1 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">اقترح تصميمك</h1>
+            <p style="color: var(--text-secondary); font-size: 18px; line-height: 1.6;">عندك تصميم في دماغك؟<br>ابعتهولنا وهنشوف نعمله لك</p>
+        </div>
+
+        <div id="suggest-form-wrapper">
+            <form id="suggestForm" style="background: var(--bg-elevated); padding: var(--space-8); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+                
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">تصنيف المنتج*</label>
+                    <select id="s-cat" class="form-input" required style="appearance:auto">
+                        <option value="">اختار التصنيف</option>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+
+                <div class="form-group" id="custom-cat-group" style="margin-bottom: var(--space-4); display: none;">
+                    <label class="form-label">اسم التصنيف اللي عايزه*</label>
+                    <input type="text" id="s-custom-cat" class="form-input" placeholder="اكتب اسم التصنيف اللي عايزه">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">اسمك*</label>
+                    <input type="text" id="s-name" class="form-input" placeholder="اسمك الكريم" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">رقم التواصل*</label>
+                    <input type="tel" id="s-phone" class="form-input" placeholder="01xxxxxxxxx" pattern="^01[0-9]{9}$" title="رقم هاتف مصري صحيح يبدأ بـ 01" dir="ltr" style="text-align: right;" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">وصف التصميم*</label>
+                    <textarea id="s-desc" class="form-input" placeholder="وصّف التصميم اللي عايزه... مثلاً: لوحة بألوان داكنة فيها صورة مغني مع كلمات أغنية معينة" rows="5" minlength="20" maxlength="1000" required></textarea>
+                    <div style="display: flex; justify-content: flex-end; font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                        <span id="char-counter" class="en-text">0 / 1000</span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: var(--space-6);">
+                    <label class="form-label">صورة مرجعية (اختياري)</label>
+                    <div class="file-upload-area" id="s-upload-area" onclick="document.getElementById('s-file').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleDrop(event)">
+                        <div id="upload-content">
+                            <i data-lucide="image" style="width:32px; height:32px; color:var(--text-muted); margin-bottom:12px;"></i>
+                            <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">اسحب صورة هنا أو اضغط للاختيار</div>
+                            <div style="font-size: 14px; color: var(--text-muted);">JPG, PNG أو GIF — حد أقصى 5MB</div>
+                        </div>
+                        <input type="file" id="s-file" accept="image/jpeg, image/png, image/gif, image/webp" style="display:none;" onchange="handleFileSelect(event)">
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; height: 52px; font-size: 18px;" disabled>إرسال الاقتراح ✦</button>
+            </form>
+        </div>
+
+        <div id="success-wrapper" style="display: none;">
+            <div class="success-state">
+                <div style="margin-bottom: 24px;">
+                    <svg class="check-anim" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 64px; height: 64px; margin: 0 auto;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">وصلنا اقتراحك! 🎉</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 32px; font-size: 16px; line-height: 1.6;">هنراجعه وهنتواصل معاك على رقمك قريباً</p>
+                
+                <div style="display: flex; gap: 16px; justify-content: center;">
+                    <a href="/" class="btn btn-ghost">العودة للرئيسية</a>
+                    <a href="/shop" class="btn btn-primary">تسوق دلوقتي</a>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand" data-store-name>Heru</div>
+                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/shop">المتجر</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Global for base64 payload
+        let imageBase64Data = null;
+        let imageFileName = null;
+
+        function showImagePreview(base64, name) {
+            const uploadContent = document.getElementById('upload-content');
+            uploadContent.innerHTML = `
+                <div style="display:flex; align-items:center; gap:16px; width:100%; text-align:right;">
+                    <img src="${base64}" style="width:100px; height:100px; object-fit:contain; border-radius:8px; border:1px solid var(--border);">
+                    <div style="flex:1; overflow:hidden;">
+                        <div style="font-weight:600; font-size:14px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" dir="ltr">${name}</div>
+                        <button type="button" class="btn btn-ghost" onclick="clearImage(event)" style="margin-top:8px; padding:4px 12px; color:var(--error); border-color:var(--error);">× إزالة</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function clearImage(e) {
+            e.stopPropagation();
+            imageBase64Data = null;
+            imageFileName = null;
+            document.getElementById('s-file').value = '';
+            document.getElementById('upload-content').innerHTML = `
+                <i data-lucide="image" style="width:32px; height:32px; color:var(--text-muted); margin-bottom:12px;"></i>
+                <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">اسحب صورة هنا أو اضغط للاختيار</div>
+                <div style="font-size: 14px; color: var(--text-muted);">JPG, PNG أو GIF — حد أقصى 5MB</div>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function processFile(file) {
+            if(file.size > 5 * 1024 * 1024) {
+                alert('حجم الصورة أكبر من 5 ميجابايت!');
+                return;
+            }
+            if(!file.type.startsWith('image/')) {
+                alert('الرجاء اختيار صورة صالحة!');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imageBase64Data = e.target.result;
+                imageFileName = file.name;
+                showImagePreview(imageBase64Data, imageFileName);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleFileSelect(e) {
+            if(e.target.files && e.target.files[0]) {
+                processFile(e.target.files[0]);
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('s-upload-area').style.borderColor = 'var(--border)';
+            if(e.dataTransfer.files && e.dataTransfer.files[0]) {
+                processFile(e.dataTransfer.files[0]);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if(window.lucide) lucide.createIcons();
+            
+            const catSelect = document.getElementById('s-cat');
+            const customCatGroup = document.getElementById('custom-cat-group');
+            const customCatInput = document.getElementById('s-custom-cat');
+            const descObj = document.getElementById('s-desc');
+            const counterObj = document.getElementById('char-counter');
+            const submitBtn = document.getElementById('submitBtn');
+            const nameObj = document.getElementById('s-name');
+            const phoneObj = document.getElementById('s-phone');
+
+            let cats = [];
+            try { cats = JSON.parse(localStorage.getItem('heru_categories') || '[]'); } catch(e){}
+            
+            cats.filter(c => c.is_active).forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.name_ar;
+                opt.textContent = c.name_ar;
+                catSelect.appendChild(opt);
+            });
+            const otherOpt = document.createElement('option');
+            otherOpt.value = 'other';
+            otherOpt.textContent = 'تصنيف تاني (اكتب)';
+            catSelect.appendChild(otherOpt);
+
+            catSelect.addEventListener('change', () => {
+                if(catSelect.value === 'other') {
+                    customCatGroup.style.display = 'block';
+                    customCatInput.required = true;
+                } else {
+                    customCatGroup.style.display = 'none';
+                    customCatInput.required = false;
+                    customCatInput.value = '';
+                }
+                validateForm();
+            });
+
+            const validateForm = () => {
+                const c = catSelect.value;
+                const cust = customCatInput.value.trim();
+                const n = nameObj.value.trim();
+                const p = phoneObj.value.trim();
+                const d = descObj.value.trim();
+                
+                counterObj.textContent = `${d.length} / 1000`;
+                
+                let isValid = true;
+                if(!c) isValid = false;
+                if(c === 'other' && !cust) isValid = false;
+                if(!n) isValid = false;
+                if(!/^01[0-9]{9}$/.test(p)) isValid = false;
+                if(d.length < 20 || d.length > 1000) isValid = false;
+                
+                submitBtn.disabled = !isValid;
+            };
+
+            ['keyup', 'change', 'input'].forEach(evt => {
+                nameObj.addEventListener(evt, validateForm);
+                phoneObj.addEventListener(evt, validateForm);
+                descObj.addEventListener(evt, validateForm);
+                customCatInput.addEventListener(evt, validateForm);
+            });
+
+            document.getElementById('suggestForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if(submitBtn.disabled) return;
+                
+                const c = catSelect.value;
+                const cust = customCatInput.value.trim();
+                
+                let suggestions = [];
+                try {
+                    suggestions = JSON.parse(localStorage.getItem('heru_suggestions') || '[]');
+                } catch(err) {}
+                
+                const payload = {
+                    id: "sug_" + Date.now(),
+                    category: c === 'other' ? cust : c,
+                    custom_category: c === 'other' ? cust : "",
+                    name: nameObj.value.trim(),
+                    phone: phoneObj.value.trim(),
+                    description: descObj.value.trim(),
+                    image_base64: imageBase64Data,
+                    image_name: imageFileName,
+                    status: "new",
+                    admin_notes: "",
+                    created_at: new Date().toISOString()
+                };
+                
+                suggestions.push(payload);
+                localStorage.setItem('heru_suggestions', JSON.stringify(suggestions));
+                
+                document.getElementById('suggest-form-wrapper').style.display = 'none';
+                document.getElementById('suggest-header').style.display = 'none';
+                document.getElementById('success-wrapper').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

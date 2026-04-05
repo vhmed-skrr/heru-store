@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إتمام الطلب | Heru</title>
+    <meta property="og:site_name" content="Heru">
+    <meta property="og:locale" content="ar_EG">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="/settings.js"></script>
+    <style>
+        .checkout-layout { display: flex; gap: var(--space-8); margin-block-start: var(--space-8); }
+        .checkout-form-col { flex: 2; }
+        .checkout-summary-col { flex: 1; min-width: 320px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: var(--space-6); height: fit-content; position: sticky; top: 100px; }
+        
+        .form-group { margin-block-end: var(--space-4); }
+        .form-label { display: block; margin-block-end: 8px; font-weight: 600; color: var(--text-primary); }
+        .form-input { width: 100%; padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-primary); font-family: inherit; font-size: 16px; outline: none; transition: border-color var(--transition-fast); }
+        .form-input:focus { border-color: var(--accent); }
+        .form-input.error { border-color: var(--error); }
+        .form-error-msg { color: var(--error); font-size: var(--text-sm); margin-block-start: 4px; display: none; }
+        
+        .payment-box { background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-3); margin-block-end: var(--space-6); font-weight: 600; }
+        
+        .summary-item { display: flex; justify-content: space-between; margin-block-end: var(--space-3); font-size: var(--text-sm); border-block-end: 1px solid var(--border); padding-block-end: var(--space-3); }
+        .summary-item-name { flex: 1; padding-inline-end: var(--space-4); }
+        .summary-item-price { font-weight: 700; white-space: nowrap; }
+
+        @media (max-width: 768px) {
+            .checkout-layout { flex-direction: column-reverse; }
+            .checkout-summary-col { position: static; min-width: 100%; margin-block-end: var(--space-6); }
+        }
+    </style>
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <nav class="navbar">
+        <a href="/" class="nav-brand" data-store-name>Heru</a>
+        <ul class="nav-links">
+            <li><a href="/">الرئيسية</a></li>
+            <li><a href="/shop.html">المتجر</a></li>
+            <li><a href="/track-order.html">تتبع طلبي</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="icon-btn cart-trigger" title="السلة" onclick="window.location.href='/cart.html'">
+                <i data-lucide="shopping-cart"></i>
+                <span class="cart-badge hidden">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CHECKOUT CONTAINER -->
+    <main class="container page-content" id="checkout-root" style="min-height: 70vh; padding-top: var(--space-8); padding-bottom: var(--space-12);">
+        <!-- Javascript dynamically injects the checkout template here -->
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand" data-store-name>Heru</div>
+                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</body>
+</html>

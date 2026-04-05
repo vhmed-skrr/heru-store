@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل المنتج | Heru</title>
+    <meta name="description" content="اشتري لوحات فنية ونوت بوك وكشاكيل بتصاميم شبابية حصرية.">
+    <meta property="og:site_name" content="Heru">
+    <meta property="og:locale" content="ar_EG">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="/settings.js"></script>
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 1. Navbar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand" data-store-name>Heru</a>
+        <ul class="nav-links">
+            <li><a href="/">الرئيسية</a></li>
+            <li><a href="/shop">المتجر</a></li>
+            <li><a href="#">تتبع طلبي</a></li>
+        </ul>
+        <div class="nav-actions">
+            <!-- Theme Toggle -->
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="icon-btn" title="تغيير اللغة">
+                <span class="en-text" style="font-weight: 700; font-size: 14px;">AR</span>
+            </button>
+            <button class="icon-btn cart-trigger" title="السلة">
+                <i data-lucide="shopping-cart"></i>
+                <span class="cart-badge hidden">0</span>
+            </button>
+            <button class="icon-btn hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="icon-btn" onclick="document.getElementById('mobileMenu').classList.remove('open')" style="align-self: flex-end;">
+            <i data-lucide="x"></i>
+        </button>
+        <div style="display: flex; flex-direction: column; gap: var(--space-6); font-size: var(--text-xl); font-weight: 700;">
+            <a href="/" style="color: var(--text-primary); text-decoration: none;">الرئيسية</a>
+            <a href="/shop" style="color: var(--text-primary); text-decoration: none;">المتجر</a>
+            <a href="#" style="color: var(--text-primary); text-decoration: none;">تتبع طلبي</a>
+        </div>
+    </div>
+
+    <!-- Product Container -->
+    <main class="container page-enter" id="product-root" style="padding-top: 120px; padding-bottom: 60px;">
+        <!-- Filled by JS -->
+    </main>
+
+    <!-- Compare Bar -->
+    <div id="compare-bar" class="compare-bar">
+        <div class="compare-items" id="compare-items-container">
+            <!-- Mini compare items populated locally -->
+        </div>
+        <button class="btn btn-primary" onclick="openModal('compareModal')" id="compare-trigger-btn">قارن الآن (<span class="en-text" id="compare-count">0</span>)</button>
+    </div>
+
+    <!-- Compare Modal -->
+    <div class="modal-overlay" id="compareModal">
+        <div class="modal-content compare-modal-content">
+            <button class="modal-close" onclick="closeModal('compareModal')">&times;</button>
+            <h3 style="margin-block-end: var(--space-6); font-size: var(--text-2xl);">مقارنة المنتجات</h3>
+            <div style="overflow-x: auto;">
+                <table class="compare-table" id="compare-table">
+                    <!-- Generated via JS -->
+                </table>
+            </div>
+            <div class="grid-flex" style="justify-content: flex-end; margin-block-start: var(--space-4);">
+                <button class="btn btn-ghost" onclick="closeModal('compareModal')">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Col 1 -->
+                <div>
+                    <div class="footer-brand" data-store-name>Heru</div>
+                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
+                    <a href="#" data-whatsapp data-whatsapp-msg="مرحباً، لدي استفسار من الموقع" target="_blank" class="btn btn-whatsapp" style="height:48px; font-size:14px;">
+                        <i data-lucide="message-circle" style="width:20px;height:20px;"></i> تواصل معنا
+                    </a>
+                </div>
+                <!-- Col 2 -->
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/shop">المتجر</a></li>
+                        <li><a href="#">تتبع طلبي</a></li>
+                    </ul>
+                </div>
+                <!-- Col 3 -->
+                <div>
+                    <h4 class="footer-title">معلومات</h4>
+                    <ul class="footer-links">
+                        <li><a href="/privacy">سياسة الخصوصية</a></li>
+                        <li><a href="/terms">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+                <div class="social-links">
+                    <a href="#" data-social-instagram><i data-lucide="instagram"></i></a>
+                    <a href="#" data-social-tiktok><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>
+                    <a href="#" data-social-facebook><i data-lucide="facebook"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div class="modal-overlay" id="lightboxModal" style="background: rgba(0,0,0,0.9); z-index: 9999;">
+        <div style="width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center;">
+            <button class="modal-close" onclick="closeModal('lightboxModal')" style="color: white; font-size: 32px; top: 20px; right: 20px; position: absolute; background: transparent; border: none; cursor: pointer;">&times;</button>
+            <div id="lightbox-content" style="width: 90vw; height: 90vh; background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</body>
+</html>

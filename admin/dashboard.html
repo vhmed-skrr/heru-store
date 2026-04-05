@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heru Admin - الإحصائيات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-nav-brand">Heru Admin</div>
+            <a href="/admin/dashboard.html" class="admin-nav-link active"><i data-lucide="bar-chart-2"></i> الإحصائيات</a>
+            <a href="/admin/orders.html" class="admin-nav-link"><i data-lucide="package"></i> الطلبات</a>
+            <a href="/admin/products.html" class="admin-nav-link"><i data-lucide="shopping-bag"></i> المنتجات</a>
+            <a href="/admin/reviews.html" class="admin-nav-link"><i data-lucide="star"></i> التقييمات</a>
+            <div style="flex:1"></div>
+            <button class="admin-nav-link" style="border:none; width:100%; justify-content:start; font-family:inherit; font-size:inherit; cursor:pointer;" onclick="window.logoutAdmin()"><i data-lucide="log-out"></i> تسجيل الخروج</button>
+        </aside>
+
+        <!-- Mobile Header -->
+        <div class="admin-mobile-header" style="display:none">
+            <div class="admin-nav-brand" style="margin:0; padding:0">Heru Admin</div>
+            <button class="hamburger-admin" onclick="document.getElementById('adminSidebar').classList.toggle('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <main class="admin-main" id="admin-dashboard-root">
+            <h1 style="margin-block-end:var(--space-6)">إحصائيات المتجر</h1>
+            
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:var(--space-6); margin-block-end:var(--space-8)">
+                <div class="admin-stat-card">
+                    <span style="color:var(--text-muted); font-weight:700">📦 إجمالي الطلبات</span>
+                    <div class="admin-stat-val" id="stat-orders-total">0</div>
+                </div>
+                <div class="admin-stat-card" style="border-color:var(--accent);">
+                    <span style="color:var(--accent); font-weight:700">🆕 طلبات جديدة</span>
+                    <div class="admin-stat-val en-text" id="stat-orders-new" style="color:var(--accent)">0</div>
+                </div>
+                <div class="admin-stat-card">
+                    <span style="color:var(--text-muted); font-weight:700">💰 حجم المبيعات الناجحة</span>
+                    <div class="admin-stat-val en-text" id="stat-sales">0 <span style="font-size:16px; font-family:'Cairo'">EGP</span></div>
+                </div>
+                <div class="admin-stat-card" style="border-color:var(--warning);">
+                    <span style="color:var(--warning); font-weight:700">⭐ تقييمات منتظرة</span>
+                    <div class="admin-stat-val en-text" id="stat-reviews-new" style="color:var(--warning)">0</div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h2 style="margin-block-end:var(--space-4)">أحدث 5 طلبات</h2>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>العميل</th>
+                                <th>المبلغ</th>
+                                <th>طريقة الدفع</th>
+                                <th>الحالة</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-recent-orders"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../script.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

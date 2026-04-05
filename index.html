@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heru — لوحات ودفاتر بتصاميم شبابية عصرية</title>
+    <meta name="description" content="متجر Heru — اشتري لوحات فنية ونوت بوك وكشاكيل بتصاميم شبابية حصرية. شحن لكل مصر، اطلب على واتساب.">
+    <meta property="og:site_name" content="Heru">
+    <meta property="og:locale" content="ar_EG">
+    <meta property="og:title" content="Heru — لوحات ودفاتر بتصاميم شبابية عصرية">
+    
+    <!-- Font preloading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="/settings.js"></script>
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 1. Navbar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand" data-store-name>Heru</a>
+        <ul class="nav-links">
+            <li><a href="/" class="active">الرئيسية</a></li>
+            <li><a href="/shop">المتجر</a></li>
+            <li><a href="#">تتبع طلبي</a></li>
+        </ul>
+        <div class="nav-actions">
+            <!-- Theme Toggle -->
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="icon-btn" title="تغيير اللغة">
+                <span class="en-text" style="font-weight: 700; font-size: 14px;">AR</span>
+            </button>
+            <button class="icon-btn cart-trigger" title="السلة">
+                <i data-lucide="shopping-cart"></i>
+                <span class="cart-badge hidden">0</span>
+            </button>
+            <button class="icon-btn hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="icon-btn" onclick="document.getElementById('mobileMenu').classList.remove('open')" style="align-self: flex-end;">
+            <i data-lucide="x"></i>
+        </button>
+        <div style="display: flex; flex-direction: column; gap: var(--space-6); font-size: var(--text-xl); font-weight: 700;">
+            <a href="/" style="color: var(--accent); text-decoration: none;">الرئيسية</a>
+            <a href="/shop" style="color: var(--text-primary); text-decoration: none;">المتجر</a>
+            <a href="#" style="color: var(--text-primary); text-decoration: none;">تتبع طلبي</a>
+        </div>
+    </div>
+
+    <!-- 2. Hero Section -->
+    <section class="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-grain"></div>
+        <div class="container hero-inner">
+            <div class="hero-text">
+                <div class="hero-eyebrow hero-anim stagger-1">تصاميم حصرية ✦</div>
+                <h1 class="hero-h1 hero-anim stagger-2">فن يناسب <span>أسلوبك</span></h1>
+                <p class="hero-sub hero-anim stagger-3">
+                    لوحات ودفاتر كشاكيل بتصاميم شبابية حصرية — عبّر عن نفسك بطريقتك
+                </p>
+                <div class="hero-ctas hero-anim stagger-4">
+                    <a href="/shop" class="btn btn-primary">تسوق دلوقتي</a>
+                    <a href="/suggest" class="btn btn-ghost">اقترح تصميم ✦</a>
+                </div>
+
+            </div>
+            <div class="hero-visual hero-anim stagger-3">
+                <div class="hero-visual-box" id="hero-slideshow-root">
+                    <div class="hero-visual-accent"></div>
+                    <div class="hero-visual-text" data-store-name-en>HERU</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Category Strip -->
+    <section class="section scroll-reveal">
+        <div class="container" style="position: relative;">
+            <div id="category-carousel-root"></div>
+        </div>
+    </section>
+
+    <!-- 4. Featured Products -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header scroll-reveal">
+                <h2 class="section-title">أبرز المنتجات</h2>
+                <a href="/shop" class="view-all-link">عرض الكل <i data-lucide="arrow-left" style="width:18px;height:18px;"></i></a>
+            </div>
+            <!-- Dynamic Grid Rendered via JavaScript -->
+            <div id="featured-grid" class="grid-cols-4">
+                <!-- script.js will populate 8 items here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Brand Values -->
+    <section class="brand-values-wrapper scroll-reveal">
+        <div class="container">
+            <div class="brand-values">
+                <div>
+                    <div class="brand-icon">🎨</div>
+                    <div class="brand-title">تصاميم حصرية</div>
+                    <div class="brand-desc">كل تصميم فريد ومش موجود عند غيرنا</div>
+                </div>
+                <div>
+                    <div class="brand-icon">🚚</div>
+                    <div class="brand-title" data-shipping-text>شحن لكل مصر</div>
+                    <div class="brand-desc">بنوصلك في <span class="en-text">2-5</span> أيام لأي محافظة</div>
+                </div>
+                <div>
+                    <div class="brand-icon">💚</div>
+                    <div class="brand-title">جودة مضمونة</div>
+                    <div class="brand-desc">مواد عالية الجودة أو ترجعها مجاناً</div>
+                </div>
+                <div>
+                    <div class="brand-icon">💬</div>
+                    <div class="brand-title">تواصل سهل</div>
+                    <div class="brand-desc">اطلب على واتساب في ثانية</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Testimonials -->
+    <section class="section testimonials-section scroll-reveal">
+        <div class="container" id="store-reviews-container">
+            <h2 class="section-title" style="margin-block-end: var(--space-12);">بيقولوا عنا إيه ؟</h2>
+            
+            <div id="testimonials-root" style="position:relative">
+                <!-- script.js will map heru_store_reviews here -->
+            </div>
+            
+            <div style="text-align: center; margin-block-start: var(--space-12);">
+                <a href="/review" class="btn btn-ghost" style="font-size: 18px;">أضف تقييمك ✦</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Col 1 -->
+                <div>
+                    <div class="footer-brand" data-store-name>Heru</div>
+                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
+                    <a href="#" data-whatsapp data-whatsapp-msg="مرحباً، لدي استفسار من الموقع" target="_blank" class="btn btn-whatsapp" style="height:48px; font-size:14px;">
+                        <i data-lucide="message-circle" style="width:20px;height:20px;"></i> تواصل معنا
+                    </a>
+                </div>
+                <!-- Col 2 -->
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/shop">المتجر</a></li>
+                        <li><a href="#">تتبع طلبي</a></li>
+                    </ul>
+                </div>
+                <!-- Col 3 -->
+                <div>
+                    <h4 class="footer-title">معلومات</h4>
+                    <ul class="footer-links">
+                        <li><a href="/privacy">سياسة الخصوصية</a></li>
+                        <li><a href="/terms">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+                <div class="social-links">
+                    <a href="#" data-social-instagram><i data-lucide="instagram"></i></a>
+                    <a href="#" data-social-tiktok><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>
+                    <a href="#" data-social-facebook><i data-lucide="facebook"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</body>
+</html>

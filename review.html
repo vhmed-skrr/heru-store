@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاركنا تجربتك — Heru</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="/settings.js"></script>
+    <style>
+        .review-container {
+            max-width: 600px;
+            margin: var(--space-12) auto;
+            position: relative;
+        }
+        .stars-interactive {
+            display: flex;
+            gap: 8px;
+            direction: rtl;
+        }
+        .stars-interactive i {
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            color: var(--border);
+            transition: color 0.2s;
+        }
+        .stars-interactive i.active,
+        .stars-interactive i:hover,
+        .stars-interactive i:hover ~ i {
+            color: var(--warning);
+            fill: var(--warning);
+        }
+        /* RTL trick to make hover fill to the right. Actually standard hover fills neighbors differently depending on flex direction. */
+        .stars-wrapper {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .stars-wrapper i {
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            color: var(--border);
+            fill: none;
+            transition: all 0.2s;
+        }
+        .stars-wrapper i:hover,
+        .stars-wrapper i:hover ~ i,
+        .stars-wrapper i.active {
+            color: var(--warning);
+            fill: var(--warning);
+        }
+        
+        .success-state {
+            text-align: center;
+            padding: var(--space-8);
+            background: var(--bg-elevated);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 1. Navbar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand" data-store-name>Heru</a>
+        <ul class="nav-links">
+            <li><a href="/">الرئيسية</a></li>
+            <li><a href="/shop">المتجر</a></li>
+            <li><a href="#">تتبع طلبي</a></li>
+        </ul>
+        <div class="nav-actions">
+            <!-- Theme Toggle -->
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر"><i data-lucide="moon"></i></button>
+            <button class="icon-btn" title="تغيير اللغة"><span class="en-text" style="font-weight: 700; font-size: 14px;">AR</span></button>
+            <button class="icon-btn cart-trigger" title="السلة"><i data-lucide="shopping-cart"></i><span class="cart-badge hidden">0</span></button>
+            <button class="icon-btn hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')"><i data-lucide="menu"></i></button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="icon-btn" onclick="document.getElementById('mobileMenu').classList.remove('open')" style="align-self: flex-end;"><i data-lucide="x"></i></button>
+        <div style="display: flex; flex-direction: column; gap: var(--space-6); font-size: var(--text-xl); font-weight: 700;">
+            <a href="/" style="color: var(--text-primary); text-decoration: none;">الرئيسية</a>
+            <a href="/shop" style="color: var(--text-primary); text-decoration: none;">المتجر</a>
+            <a href="#" style="color: var(--text-primary); text-decoration: none;">تتبع طلبي</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container review-container">
+        
+        <div id="review-header" style="text-align: center; margin-bottom: var(--space-8);">
+            <h1 style="font-size: 32px; font-weight: 900; margin-bottom: 8px;">شاركنا تجربتك</h1>
+            <p style="color: var(--text-secondary); font-size: 18px;">رأيك مهم لنا وبيساعد الناس تاخد قرارها</p>
+        </div>
+
+        <div id="review-form-wrapper">
+            <form id="storeReviewForm" style="background: var(--bg-elevated); padding: var(--space-8); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+                
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">اسمك*</label>
+                    <input type="text" id="r-name" class="form-input" placeholder="الاسم أو الاسم الأول فقط" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">مدينتك*</label>
+                    <input type="text" id="r-city" class="form-input" placeholder="مثال: القاهرة" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">تقييمك للمتجر*</label>
+                    <!-- Visual RTL trick: flex-row-reverse so standard CSS sibling selectors ~ work securely -->
+                    <div class="stars-wrapper" id="r-stars-container">
+                        <i data-lucide="star" data-val="5"></i>
+                        <i data-lucide="star" data-val="4"></i>
+                        <i data-lucide="star" data-val="3"></i>
+                        <i data-lucide="star" data-val="2"></i>
+                        <i data-lucide="star" data-val="1" class="active"></i>
+                    </div>
+                    <div id="star-error" style="color: var(--error); font-size: 14px; margin-top: 4px; display: none;">اختار عدد النجوم</div>
+                    <input type="hidden" id="r-rating" value="1" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: var(--space-6);">
+                    <label class="form-label">تجربتك*</label>
+                    <textarea id="r-comment" class="form-input" placeholder="حدثنا عن تجربتك مع متجر Heru..." rows="5" minlength="20" maxlength="500" required></textarea>
+                    <div style="display: flex; justify-content: flex-end; font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                        <span id="char-counter" class="en-text">0 / 500</span>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; height: 52px; font-size: 18px;" disabled>إرسال التقييم 💬</button>
+            </form>
+        </div>
+
+        <div id="success-wrapper" style="display: none;">
+            <div class="success-state">
+                <div style="margin-bottom: 24px;">
+                    <svg class="check-anim" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 64px; height: 64px; margin: 0 auto;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">شكراً على تقييمك! 🎉</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 32px; font-size: 16px;">تقييمك هيظهر على الموقع بعد المراجعة</p>
+                
+                <div style="display: flex; gap: 16px; justify-content: center;">
+                    <a href="/" class="btn btn-ghost">العودة للرئيسية</a>
+                    <a href="/shop" class="btn btn-primary">تسوق دلوقتي</a>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand" data-store-name>Heru</div>
+                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/shop">المتجر</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if(window.lucide) lucide.createIcons();
+            
+            const formWrapper = document.getElementById('review-form-wrapper');
+            const successWrapper = document.getElementById('success-wrapper');
+            const submitBtn = document.getElementById('submitBtn');
+            const commentObj = document.getElementById('r-comment');
+            const counterObj = document.getElementById('char-counter');
+            
+            // Check flag
+            if (localStorage.getItem('heru_store_reviewed')) {
+                formWrapper.style.display = 'none';
+                successWrapper.style.display = 'block';
+                successWrapper.innerHTML = `
+                    <div class="success-state">
+                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px; color: var(--accent);">شكراً! أضفت تقييمك من قبل</h2>
+                        <div style="display: flex; gap: 16px; justify-content: center; margin-top: 24px;">
+                            <a href="/" class="btn btn-primary">العودة للرئيسية</a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Stars Logic
+            const stars = document.querySelectorAll('#r-stars-container i');
+            const ratingInput = document.getElementById('r-rating');
+            
+            const updateStars = (val) => {
+                stars.forEach(s => {
+                    if (parseInt(s.dataset.val) <= val) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            };
+
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const val = parseInt(star.dataset.val);
+                    ratingInput.value = val;
+                    updateStars(val);
+                    validateForm();
+                });
+            });
+
+            // Character counter and validation
+            const validateForm = () => {
+                const name = document.getElementById('r-name').value.trim();
+                const city = document.getElementById('r-city').value.trim();
+                const comment = commentObj.value.trim();
+                const rating = ratingInput.value;
+                
+                counterObj.textContent = \`\${comment.length} / 500\`;
+                
+                if (name.length > 0 && city.length > 0 && comment.length >= 20 && rating > 0) {
+                    submitBtn.disabled = false;
+                } else {
+                    submitBtn.disabled = true;
+                }
+            };
+            
+            ['keyup', 'change', 'input'].forEach(evt => {
+                document.getElementById('r-name').addEventListener(evt, validateForm);
+                document.getElementById('r-city').addEventListener(evt, validateForm);
+                commentObj.addEventListener(evt, validateForm);
+            });
+
+            // Form Submit
+            document.getElementById('storeReviewForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                if (submitBtn.disabled) return;
+                
+                let reviews = [];
+                try {
+                    reviews = JSON.parse(localStorage.getItem('heru_store_reviews') || '[]');
+                } catch(err) {}
+                
+                const newReview = {
+                    id: "sr_" + Date.now(),
+                    reviewer_name: document.getElementById('r-name').value.trim(),
+                    reviewer_city: document.getElementById('r-city').value.trim(),
+                    rating: parseInt(document.getElementById('r-rating').value),
+                    comment: document.getElementById('r-comment').value.trim(),
+                    is_approved: false,
+                    created_at: new Date().toISOString()
+                };
+                
+                reviews.push(newReview);
+                localStorage.setItem('heru_store_reviews', JSON.stringify(reviews));
+                localStorage.setItem('heru_store_reviewed', 'true');
+                
+                formWrapper.style.display = 'none';
+                document.getElementById('review-header').style.display = 'none';
+                successWrapper.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>

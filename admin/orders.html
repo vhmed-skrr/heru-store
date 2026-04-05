@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heru Admin - الطلبات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-nav-brand">Heru Admin</div>
+            <a href="/admin/dashboard.html" class="admin-nav-link"><i data-lucide="bar-chart-2"></i> الإحصائيات</a>
+            <a href="/admin/orders.html" class="admin-nav-link active"><i data-lucide="package"></i> الطلبات</a>
+            <a href="/admin/products.html" class="admin-nav-link"><i data-lucide="shopping-bag"></i> المنتجات</a>
+            <a href="/admin/reviews.html" class="admin-nav-link"><i data-lucide="star"></i> التقييمات</a>
+            <div style="flex:1"></div>
+            <button class="admin-nav-link" style="border:none; width:100%; justify-content:start; font-family:inherit; font-size:inherit; cursor:pointer;" onclick="window.logoutAdmin()"><i data-lucide="log-out"></i> تسجيل الخروج</button>
+        </aside>
+
+        <!-- Mobile Header -->
+        <div class="admin-mobile-header" style="display:none">
+            <div class="admin-nav-brand" style="margin:0; padding:0">Heru Admin</div>
+            <button class="hamburger-admin" onclick="document.getElementById('adminSidebar').classList.toggle('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+
+        <main class="admin-main" id="admin-orders-root">
+            <h1 style="margin-block-end:var(--space-6)">إدارة الطلبات</h1>
+            
+            <div class="admin-card" style="margin-block-end:var(--space-6); display:flex; flex-wrap:wrap; gap:var(--space-4); align-items:center; justify-content:space-between;">
+                <input type="text" id="admin-orders-search" class="form-input" placeholder="ابحث برقم الطلب أو اسم العميل..." style="max-width:300px;">
+                
+                <div style="display:flex; gap:var(--space-4);">
+                    <select id="admin-orders-payment-filter" class="form-input" style="width:auto">
+                        <option value="all">كل طرق الدفع</option>
+                        <option value="cod">كاش</option>
+                        <option value="instapay">انستاباي</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="admin-tabs" id="orders-status-tabs">
+                <button class="admin-tab active" data-status="all">الكل</button>
+                <button class="admin-tab" data-status="received">استُلم</button>
+                <button class="admin-tab" data-status="processing">جاري</button>
+                <button class="admin-tab" data-status="shipped">شُحن</button>
+                <button class="admin-tab" data-status="delivered">تم التسليم</button>
+            </div>
+
+            <div class="admin-card">
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>رقم الطلب</th>
+                                <th>العميل</th>
+                                <th>الهاتف</th>
+                                <th>المبلغ</th>
+                                <th>الدفع</th>
+                                <th>الحالة</th>
+                                <th>التاريخ</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div class="modal-overlay" id="orderDetailModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-block-end:var(--space-6); border-block-end:1px solid var(--border); padding-block-end:var(--space-4)">
+                <h2>تفاصيل الطلب <span id="modal-order-id" class="en-text" style="color:var(--accent)"></span></h2>
+                <button class="icon-btn" onclick="closeModal('orderDetailModal')"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div id="modal-order-content"></div>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

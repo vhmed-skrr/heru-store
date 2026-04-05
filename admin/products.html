@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heru Admin - المنتجات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-nav-brand">Heru Admin</div>
+            <a href="/admin/dashboard.html" class="admin-nav-link"><i data-lucide="bar-chart-2"></i> الإحصائيات</a>
+            <a href="/admin/orders.html" class="admin-nav-link"><i data-lucide="package"></i> الطلبات</a>
+            <a href="/admin/products.html" class="admin-nav-link active"><i data-lucide="shopping-bag"></i> المنتجات</a>
+            <a href="/admin/reviews.html" class="admin-nav-link"><i data-lucide="star"></i> التقييمات</a>
+            <div style="flex:1"></div>
+            <button class="admin-nav-link" style="border:none; width:100%; justify-content:start; font-family:inherit; font-size:inherit; cursor:pointer;" onclick="window.logoutAdmin()"><i data-lucide="log-out"></i> تسجيل الخروج</button>
+        </aside>
+
+        <div class="admin-mobile-header" style="display:none">
+            <div class="admin-nav-brand" style="margin:0; padding:0">Heru Admin</div>
+            <button class="hamburger-admin" onclick="document.getElementById('adminSidebar').classList.toggle('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+
+        <main class="admin-main" id="admin-products-root">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-block-end:var(--space-6)">
+                <h1>إدارة المنتجات</h1>
+                <button class="btn btn-primary" onclick="openProductModal()">إضافة منتج جديد +</button>
+            </div>
+            
+            <div class="admin-tabs" id="products-category-tabs">
+                <button class="admin-tab active" data-cat="all">الكل</button>
+                <button class="admin-tab" data-cat="poster">لوحات</button>
+                <button class="admin-tab" data-cat="notebook">نوت بوك</button>
+                <button class="admin-tab" data-cat="sketchbook">كشكول</button>
+            </div>
+
+            <div class="admin-card">
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>الصورة</th>
+                                <th>الاسم</th>
+                                <th>السعر</th>
+                                <th>التصنيف</th>
+                                <th>المخزون</th>
+                                <th>مميز</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="productFormModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-block-end:var(--space-6); border-block-end:1px solid var(--border); padding-block-end:var(--space-4)">
+                <h2 id="product-modal-title">إضافة منتج جديد</h2>
+                <button class="icon-btn" onclick="closeModal('productFormModal')"><i data-lucide="x"></i></button>
+            </div>
+            <form id="product-form" onsubmit="event.preventDefault(); saveProduct();">
+                <input type="hidden" id="p-id" value="">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); margin-block-end:var(--space-4)">
+                    <div><label>الاسم بالعربي*</label><input type="text" id="p-ar" class="form-input" required></div>
+                    <div><label>الاسم بالإنجليزي*</label><input type="text" id="p-en" class="form-input" required></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--space-4); margin-block-end:var(--space-4)">
+                    <div><label>السعر*</label><input type="number" id="p-price" min="1" max="999" class="form-input" required></div>
+                    <div><label>التصنيف*</label>
+                        <select id="p-cat" class="form-input" required>
+                            <option value="poster">لوحة</option><option value="notebook">نوت بوك</option><option value="sketchbook">كشكول</option>
+                        </select>
+                    </div>
+                    <div><label>المخزون*</label><input type="number" id="p-stock" min="0" class="form-input" required></div>
+                </div>
+                <div style="margin-block-end:var(--space-4)">
+                    <label>الوصف بالعربي*</label>
+                    <textarea id="p-desc" class="form-input textarea-form" required rows="3"></textarea>
+                </div>
+                <div style="margin-block-end:var(--space-6)">
+                    <label style="display:flex; align-items:center; gap:var(--space-2); cursor:pointer;">
+                        <input type="checkbox" id="p-featured" style="width:20px; height:20px; accent-color:var(--accent)">
+                        <span>مميز (يظهر في الصفحة الرئيسية)</span>
+                    </label>
+                </div>
+                <div style="display:flex; gap:var(--space-4)">
+                    <button type="submit" class="btn btn-primary" style="flex:1">حفظ التغييرات</button>
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('productFormModal')">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal-content" style="max-width: 400px; text-align:center;">
+            <h2 style="color:var(--error); margin-block-end:var(--space-2)">متأكد من الحذف؟</h2>
+            <p style="color:var(--text-secondary); margin-block-end:var(--space-6)">مش هتقدر ترجعه بعدين.</p>
+            <div style="display:flex; gap:var(--space-4)">
+                <button id="btn-confirm-delete" class="btn" style="flex:1; background:var(--error); color:#fff">حذف نهائي</button>
+                <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal('deleteConfirmModal')">تراجع</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

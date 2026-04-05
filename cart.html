@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سلة المشتريات | Heru</title>
+    <meta property="og:site_name" content="Heru">
+    <meta property="og:locale" content="ar_EG">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="/settings.js"></script>
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 1. Navbar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand" data-store-name>Heru</a>
+        <ul class="nav-links">
+            <li><a href="/">الرئيسية</a></li>
+            <li><a href="/shop.html">المتجر</a></li>
+            <li><a href="#">تتبع طلبي</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="icon-btn" title="تغيير اللغة">
+                <span class="en-text" style="font-weight: 700; font-size: 14px;">AR</span>
+            </button>
+            <a href="/cart.html" class="icon-btn cart-trigger active" title="السلة">
+                <i data-lucide="shopping-cart"></i>
+                <span class="cart-badge hidden">0</span>
+            </a>
+            <button class="icon-btn hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="icon-btn" onclick="document.getElementById('mobileMenu').classList.remove('open')" style="align-self: flex-end;">
+            <i data-lucide="x"></i>
+        </button>
+        <div style="display: flex; flex-direction: column; gap: var(--space-6); font-size: var(--text-xl); font-weight: 700;">
+            <a href="/" style="color: var(--text-primary); text-decoration: none;">الرئيسية</a>
+            <a href="/shop.html" style="color: var(--text-primary); text-decoration: none;">المتجر</a>
+            <a href="#" style="color: var(--text-primary); text-decoration: none;">تتبع طلبي</a>
+        </div>
+    </div>
+
+    <!-- MAIN CART CONTAINER -->
+    <main class="container" id="cart-root" style="margin-block-start: var(--space-8); min-height: 70vh;">
+        <!-- Javascript dynamically injects the cart template here -->
+    </main>
+
+    <!-- Clear Cart Modal -->
+    <div class="modal-overlay" id="clearCartModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-block-end: var(--space-6); font-size: var(--text-2xl);">هتمسح سلتك؟</h3>
+            <button class="btn btn-primary" style="background: var(--error); border-color: var(--error); margin-block-end: var(--space-4); width: 100%;" onclick="executeClearCart()">مسح السلة</button>
+            <button class="btn btn-ghost" style="width: 100%;" onclick="closeModal('clearCartModal')">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand" data-store-name>Heru</div>
+                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/shop.html">المتجر</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">معلومات</h4>
+                    <ul class="footer-links">
+                        <li><a href="/privacy">سياسة الخصوصية</a></li>
+                        <li><a href="/terms">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</body>
+</html>

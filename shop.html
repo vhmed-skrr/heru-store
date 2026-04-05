@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المتجر — تصفح جميع المنتجات | Heru</title>
+    <meta name="description" content="تصفح أحدث المنتجات من لوحات ونوت بوك وكشاكيل من متجر هيرو.">
+    <meta property="og:site_name" content="Heru">
+    <meta property="og:locale" content="ar_EG">
+    <meta property="og:title" content="المتجر — تصفح جميع المنتجات | Heru">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="/settings.js"></script>
+</head>
+<body class="page-enter">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 1. Navbar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand" data-store-name>Heru</a>
+        <ul class="nav-links">
+            <li><a href="/">الرئيسية</a></li>
+            <li><a href="/shop.html" class="active">المتجر</a></li>
+            <li><a href="#">تتبع طلبي</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="icon-btn" title="تغيير اللغة">
+                <span class="en-text" style="font-weight: 700; font-size: 14px;">AR</span>
+            </button>
+            <button class="icon-btn cart-trigger" title="السلة">
+                <i data-lucide="shopping-cart"></i>
+                <span class="cart-badge hidden">0</span>
+            </button>
+            <button class="icon-btn hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="icon-btn" onclick="document.getElementById('mobileMenu').classList.remove('open')" style="align-self: flex-end;">
+            <i data-lucide="x"></i>
+        </button>
+        <div style="display: flex; flex-direction: column; gap: var(--space-6); font-size: var(--text-xl); font-weight: 700;">
+            <a href="/" style="color: var(--text-primary); text-decoration: none;">الرئيسية</a>
+            <a href="/shop.html" style="color: var(--accent); text-decoration: none;">المتجر</a>
+            <a href="#" style="color: var(--text-primary); text-decoration: none;">تتبع طلبي</a>
+        </div>
+    </div>
+
+    <!-- Shop Content -->
+    <main class="container page-enter">
+        <div class="shop-layout">
+            
+            <!-- Sidebar Drawer / Desktop Filter -->
+            <aside class="shop-sidebar" id="filterSidebar">
+                <div class="sidebar-inner">
+                    <button class="drawer-close" style="display: none;" id="closeDrawer" onclick="document.getElementById('filterSidebar').classList.remove('drawer-open')">
+                        <i data-lucide="x"></i>
+                    </button>
+                    
+                    <h1 style="font-size: var(--text-2xl); font-weight: 900; margin-block-end: var(--space-2);">المتجر</h1>
+                    <p id="total-results-muted" style="color: var(--text-muted); font-size: var(--text-sm); margin-block-end: var(--space-6);"><span class="en-text">12</span> منتج</p>
+
+                    <!-- Filter 1: Categories -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">التصنيف</h4>
+                        <div id="category-filters-container"></div>
+                    </div>
+
+                    <!-- Filter 2: Price Range -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">نطاق السعر</h4>
+                        <div class="range-slider">
+                            <div class="range-track"></div>
+                            <div class="range-fill" id="priceFill"></div>
+                            <input type="range" id="priceMin" min="0" max="100" value="0">
+                            <input type="range" id="priceMax" min="0" max="100" value="100">
+                        </div>
+                        <div class="price-display">من <span class="en-text" id="priceMinDisplay">0</span> إلى <span class="en-text" id="priceMaxDisplay">100</span> جنيه</div>
+                    </div>
+
+                    <!-- Filter 3: Sort -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">الترتيب</h4>
+                        <label class="filter-option">
+                            <input type="radio" name="sort" value="latest" checked> الأحدث
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="sort" value="rating"> الأعلى تقييماً
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="sort" value="price_asc"> السعر: من الأقل
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="sort" value="price_desc"> السعر: من الأعلى
+                        </label>
+                    </div>
+
+                    <button class="btn btn-ghost" id="clearFiltersBtn" style="width: 100%; display: none;" onclick="clearFilters()">مسح الفلاتر</button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <section class="shop-main">
+                <!-- Search Bar -->
+                <div class="search-bar-wrapper">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="shop-search" class="search-input" placeholder="ابحث عن منتج...">
+                    <span class="results-count" id="live-results-count"><span class="en-text">12</span> نتائج</span>
+                    <button class="search-clear hidden" id="search-clear" onclick="clearSearch()"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="shop-grid" class="grid-cols-3">
+                    <!-- Skeleton load immediately rendered -->
+                    <div class="product-card" style="padding: 16px;"><div class="skeleton skeleton-img" style="margin-block-end: 16px; border-radius: var(--radius-md);"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text skeleton-text-short"></div><div class="skeleton skeleton-btn" style="border-radius: var(--radius-md);"></div></div>
+                    <div class="product-card" style="padding: 16px;"><div class="skeleton skeleton-img" style="margin-block-end: 16px; border-radius: var(--radius-md);"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text skeleton-text-short"></div><div class="skeleton skeleton-btn" style="border-radius: var(--radius-md);"></div></div>
+                    <div class="product-card" style="padding: 16px;"><div class="skeleton skeleton-img" style="margin-block-end: 16px; border-radius: var(--radius-md);"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text skeleton-text-short"></div><div class="skeleton skeleton-btn" style="border-radius: var(--radius-md);"></div></div>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <i data-lucide="search" style="width: 64px; height: 64px; margin-block-end: 16px;" class="empty-icon"></i>
+                    <p class="empty-text">لم نجد منتجات بهذه المواصفات</p>
+                    <button class="btn btn-primary" onclick="clearFilters()">مسح الفلاتر</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Compare Bar -->
+    <div id="compare-bar" class="compare-bar">
+        <div class="compare-items" id="compare-items-container">
+            <!-- Mini compare items populated locally -->
+        </div>
+        <button class="btn btn-primary" onclick="openModal('compareModal')" id="compare-trigger-btn">قارن الآن (<span class="en-text" id="compare-count">0</span>)</button>
+    </div>
+
+    <!-- Compare Modal -->
+    <div class="modal-overlay" id="compareModal">
+        <div class="modal-content compare-modal-content">
+            <button class="modal-close" onclick="closeModal('compareModal')">&times;</button>
+            <h3 style="margin-block-end: var(--space-6); font-size: var(--text-2xl);">مقارنة المنتجات</h3>
+            <div style="overflow-x: auto;">
+                <table class="compare-table" id="compare-table">
+                    <!-- Generated via JS -->
+                </table>
+            </div>
+            <div class="grid-flex" style="justify-content: flex-end; margin-block-start: var(--space-4);">
+                <button class="btn btn-ghost" onclick="closeModal('compareModal')">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sidebar open button -->
+    <button class="mobile-filter-btn" onclick="document.getElementById('filterSidebar').classList.add('drawer-open')">
+        <i data-lucide="sliders-horizontal" style="width:20px;height:20px;"></i> الفلاتر ⚙
+    </button>
+
+    <!-- 7. Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand" data-store-name>Heru</div>
+                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/shop.html">المتجر</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title">معلومات</h4>
+                    <ul class="footer-links">
+                        <li><a href="/privacy">سياسة الخصوصية</a></li>
+                        <li><a href="/terms">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</body>
+</html>
