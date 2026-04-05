@@ -150,21 +150,6 @@ const PROMO_CODES = [
   {code:"SAVE20", type:"fixed", value:20, min_order:80, active:true}
 ];
 
-// THEME TOGGLE
-const initTheme = () => {
-  const saved = localStorage.getItem('heru_theme') || 'dark';
-  if (saved === 'light') {
-    document.documentElement.classList.add('light-mode');
-  } else {
-    document.documentElement.classList.remove('light-mode');
-  }
-};
-initTheme();
-
-const toggleTheme = () => {
-  const isLight = document.documentElement.classList.toggle('light-mode');
-  localStorage.setItem('heru_theme', isLight ? 'light' : 'dark');
-};
 
 /* =========================================================================
    DATA LAYER (LocalStorage)

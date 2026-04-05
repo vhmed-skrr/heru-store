@@ -8,6 +8,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="admin.css">
+
+<style>
+/* Hide Google Translate toolbar completely */
+.goog-te-banner-frame { display: none !important; }
+.goog-te-menu-value { display: none !important; }
+#goog-gt-tt { display: none !important; }
+.goog-tooltip { display: none !important; }
+body { top: 0 !important; }
+.skiptranslate { display: none !important; }
+
+/* Protect design from translation */
+[data-notranslate] { 
+  font-family: inherit !important; 
+}
+.navbar-logo { 
+  font-family: inherit !important;
+}
+
+#theme-toggle-btn:hover, #lang-toggle-btn:hover {
+  border-color: var(--accent) !important;
+}
+#lang-toggle-btn:hover {
+  color: var(--accent) !important;
+}
+</style>
+
+<div id="google_translate_element" style="display:none; visibility:hidden; position:absolute;"></div>
+
 </head>
 <body class="page-enter">
 
@@ -92,5 +120,6 @@
 
     <script src="../script.js"></script>
     <script src="admin.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

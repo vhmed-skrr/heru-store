@@ -32,6 +32,34 @@
         .conf-btn-wa { background: #25D366; color: white; border: none; font-weight: 700; height: 52px; width: 100%; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 16px; cursor: pointer; transition: opacity 0.2s; }
         .conf-btn-wa:hover { opacity: 0.9; }
     </style>
+
+<style>
+/* Hide Google Translate toolbar completely */
+.goog-te-banner-frame { display: none !important; }
+.goog-te-menu-value { display: none !important; }
+#goog-gt-tt { display: none !important; }
+.goog-tooltip { display: none !important; }
+body { top: 0 !important; }
+.skiptranslate { display: none !important; }
+
+/* Protect design from translation */
+[data-notranslate] { 
+  font-family: inherit !important; 
+}
+.navbar-logo { 
+  font-family: inherit !important;
+}
+
+#theme-toggle-btn:hover, #lang-toggle-btn:hover {
+  border-color: var(--accent) !important;
+}
+#lang-toggle-btn:hover {
+  color: var(--accent) !important;
+}
+</style>
+
+<div id="google_translate_element" style="display:none; visibility:hidden; position:absolute;"></div>
+
 </head>
 <body class="page-enter">
 
@@ -52,5 +80,6 @@
 
     <script src="script.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

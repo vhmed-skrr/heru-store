@@ -540,6 +540,8 @@ document.addEventListener('DOMContentLoaded', function() {
   initStore()
   applySettingsToPage()
   updateCartBadge()
+  initTheme()
+  initLanguage()
 })
 
 // ─────────────────────────────
@@ -628,5 +630,111 @@ function showToast(message, type = 'info') {
   `
   document.body.appendChild(toast)
   setTimeout(() => toast.remove(), 3000)
+}
+
+// ─────────────────────────────
+// THEME SYSTEM
+// ─────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem('heru_theme') || 'dark'
+  applyTheme(saved)
+}
+
+function applyTheme(theme) {
+  const html = document.documentElement
+  if (theme === 'light') {
+    html.classList.add('light-mode')
+    html.classList.remove('dark-mode')
+  } else {
+    html.classList.remove('light-mode')
+    html.classList.add('dark-mode')
+  }
+  localStorage.setItem('heru_theme', theme)
+  updateThemeButton(theme)
+}
+
+function toggleTheme() {
+  const current = localStorage.getItem('heru_theme') || 'dark'
+  applyTheme(current === 'dark' ? 'light' : 'dark')
+}
+
+function updateThemeButton(theme) {
+  const btn = document.getElementById('theme-toggle-btn')
+  if (!btn) return
+  btn.innerHTML = theme === 'dark' 
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" 
+            fill="none" stroke="currentColor" 
+            stroke-width="2">
+         <circle cx="12" cy="12" r="5"/>
+         <line x1="12" y1="1" x2="12" y2="3"/>
+         <line x1="12" y1="21" x2="12" y2="23"/>
+         <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+         <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+         <line x1="1" y1="12" x2="3" y2="12"/>
+         <line x1="21" y1="12" x2="23" y2="12"/>
+         <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+       </svg>`
+    : `<svg width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor"
+            stroke-width="2">
+         <path d="M21 12.79A9 9 0 1 1 11.21 3 
+                  7 7 0 0 0 21 12.79z"/>
+       </svg>`
+  btn.setAttribute('aria-label', 
+    theme === 'dark' ? 'تفعيل الوضع الفاتح' 
+                     : 'تفعيل الوضع الداكن')
+  btn.title = theme === 'dark' ? 'Light Mode' : 'Dark Mode'
+}
+
+// ─────────────────────────────
+// LANGUAGE SYSTEM
+// ─────────────────────────────
+function initLanguage() {
+  const saved = localStorage.getItem('heru_lang') || 'ar'
+  // Google Translate init
+  window.googleTranslateElementInit = function() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'ar',
+      includedLanguages: 'en',
+      autoDisplay: false,
+      layout: google.translate.TranslateElement
+               .InlineLayout.SIMPLE
+    }, 'google_translate_element')
+  }
+  updateLangButton(saved)
+}
+
+function toggleLanguage() {
+  const current = localStorage.getItem('heru_lang') || 'ar'
+  const next = current === 'ar' ? 'en' : 'ar'
+  localStorage.setItem('heru_lang', next)
+  updateLangButton(next)
+  
+  if (next === 'en') {
+    // Trigger Google Translate to English
+    const select = document.querySelector('.goog-te-combo')
+    if (select) {
+      select.value = 'en'
+      select.dispatchEvent(new Event('change'))
+    } else {
+      // Fallback: reload with translate cookie
+      document.cookie = 'googtrans=/ar/en; path=/; domain=' + window.location.hostname
+      window.location.reload()
+    }
+  } else {
+    // Restore Arabic
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + window.location.hostname
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'
+    window.location.reload()
+  }
+}
+
+function updateLangButton(lang) {
+  const btn = document.getElementById('lang-toggle-btn')
+  if (!btn) return
+  btn.textContent = lang === 'ar' ? 'AR' : 'EN'
+  btn.setAttribute('lang', lang)
+  btn.title = lang === 'ar' ? 'Switch to English' : 'التبديل للعربية'
 }
 

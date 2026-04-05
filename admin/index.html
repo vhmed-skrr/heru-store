@@ -64,6 +64,34 @@
         .dropzone:hover { border-color: var(--accent); background: var(--bg-elevated); }
         .img-slot-wrapper { background: var(--bg-elevated); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--border); }
     </style>
+
+<style>
+/* Hide Google Translate toolbar completely */
+.goog-te-banner-frame { display: none !important; }
+.goog-te-menu-value { display: none !important; }
+#goog-gt-tt { display: none !important; }
+.goog-tooltip { display: none !important; }
+body { top: 0 !important; }
+.skiptranslate { display: none !important; }
+
+/* Protect design from translation */
+[data-notranslate] { 
+  font-family: inherit !important; 
+}
+.navbar-logo { 
+  font-family: inherit !important;
+}
+
+#theme-toggle-btn:hover, #lang-toggle-btn:hover {
+  border-color: var(--accent) !important;
+}
+#lang-toggle-btn:hover {
+  color: var(--accent) !important;
+}
+</style>
+
+<div id="google_translate_element" style="display:none; visibility:hidden; position:absolute;"></div>
+
 </head>
 <body>
 
@@ -101,6 +129,34 @@
     <div class="admin-main">
         <div class="admin-header">
             <h2 id="header-title" style="margin: 0; font-size: 20px;">الرئيسية</h2>
+            <div class="nav-actions" style="display:flex; gap:8px;">
+            <button id="theme-toggle-btn" 
+                    onclick="toggleTheme()"
+                    class="navbar-icon-btn"
+                    aria-label="تبديل الوضع"
+                    style="background:none; border:1px solid var(--border);
+                           border-radius:8px; padding:8px;
+                           cursor:pointer; color:var(--text-primary);
+                           display:flex; align-items:center;
+                           justify-content:center; width:38px; height:38px;
+                           transition:all 200ms;">
+            </button>
+            <button id="lang-toggle-btn"
+                    onclick="toggleLanguage()"
+                    class="navbar-icon-btn"
+                    style="background:none; 
+                           border:1px solid var(--border);
+                           border-radius:8px; 
+                           padding:0 10px;
+                           cursor:pointer; 
+                           color:var(--text-primary);
+                           font-family:'Space Grotesk',sans-serif;
+                           font-size:13px; font-weight:700;
+                           height:38px; min-width:38px;
+                           letter-spacing:0.5px;
+                           transition:all 200ms;">
+              AR
+            </button></div>
         </div>
         
         <div class="admin-content">
@@ -1319,5 +1375,6 @@ const app = {
 
 window.onload = () => app.init();
 </script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

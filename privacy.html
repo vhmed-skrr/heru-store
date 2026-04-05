@@ -25,6 +25,34 @@
         .doc-text ul { padding-inline-start: var(--space-6); margin-block-start: var(--space-2); }
         .doc-text li { margin-block-end: var(--space-2); }
     </style>
+
+<style>
+/* Hide Google Translate toolbar completely */
+.goog-te-banner-frame { display: none !important; }
+.goog-te-menu-value { display: none !important; }
+#goog-gt-tt { display: none !important; }
+.goog-tooltip { display: none !important; }
+body { top: 0 !important; }
+.skiptranslate { display: none !important; }
+
+/* Protect design from translation */
+[data-notranslate] { 
+  font-family: inherit !important; 
+}
+.navbar-logo { 
+  font-family: inherit !important;
+}
+
+#theme-toggle-btn:hover, #lang-toggle-btn:hover {
+  border-color: var(--accent) !important;
+}
+#lang-toggle-btn:hover {
+  color: var(--accent) !important;
+}
+</style>
+
+<div id="google_translate_element" style="display:none; visibility:hidden; position:absolute;"></div>
+
 </head>
 <body class="page-enter">
 
@@ -36,14 +64,34 @@
             <li><a href="/shop.html">المتجر</a></li>
             <li><a href="/track-order.html">تتبع طلبي</a></li>
         </ul>
-        <div class="nav-actions">
-            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
-                <i data-lucide="moon"></i>
+        <div class="nav-actions">\n
+            <button id="theme-toggle-btn" 
+                    onclick="toggleTheme()"
+                    class="navbar-icon-btn"
+                    aria-label="تبديل الوضع"
+                    style="background:none; border:1px solid var(--border);
+                           border-radius:8px; padding:8px;
+                           cursor:pointer; color:var(--text-primary);
+                           display:flex; align-items:center;
+                           justify-content:center; width:38px; height:38px;
+                           transition:all 200ms;">
             </button>
-            <button class="icon-btn" title="تغيير اللغة">
-                <span class="en-text" style="font-weight: 700; font-size: 14px;">AR</span>
-            </button>
-            <a href="/cart.html" class="icon-btn cart-trigger" title="السلة">
+            <button id="lang-toggle-btn"
+                    onclick="toggleLanguage()"
+                    class="navbar-icon-btn"
+                    style="background:none; 
+                           border:1px solid var(--border);
+                           border-radius:8px; 
+                           padding:0 10px;
+                           cursor:pointer; 
+                           color:var(--text-primary);
+                           font-family:'Space Grotesk',sans-serif;
+                           font-size:13px; font-weight:700;
+                           height:38px; min-width:38px;
+                           letter-spacing:0.5px;
+                           transition:all 200ms;">
+              AR
+            </button>\n            <a href="/cart.html" class="icon-btn cart-trigger" title="السلة">
                 <i data-lucide="shopping-cart"></i>
                 <span class="cart-badge hidden">0</span>
             </a>
@@ -168,5 +216,6 @@
 
     <script src="script.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
