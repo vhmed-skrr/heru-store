@@ -245,8 +245,8 @@ body { top: 0 !important; }
             <div id="sec-reviews" class="section">
                 <!-- Main Type Tabs -->
                 <div class="tabs" id="main-rev-tabs" style="margin-bottom: 24px; border-bottom: 2px solid var(--border);">
-                    <button class="tab-btn active" data-main-filter="store" style="padding-bottom: 12px; margin-bottom: -2px;">تقييمات المتجر</button>
-                    <button class="tab-btn" data-main-filter="product" style="padding-bottom: 12px; margin-bottom: -2px;">تقييمات المنتجات</button>
+                    <button class="tab-btn active" data-main-filter="product" style="padding-bottom: 12px; margin-bottom: -2px;">⭐ تقييمات المنتجات</button>
+                    <button class="tab-btn" data-main-filter="store" style="padding-bottom: 12px; margin-bottom: -2px;">🏪 تقييمات الموقع</button>
                 </div>
                 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
@@ -1189,7 +1189,7 @@ const app = {
     },
     
     reviewsModule: {
-        currentMainTab: 'store',
+        currentMainTab: 'product',
         currentSubTab: 'pending',
         render() {
             const c = document.getElementById('rev-container');

@@ -43,6 +43,78 @@ body { top: 0 !important; }
 #lang-toggle-btn:hover {
   color: var(--accent) !important;
 }
+
+/* Feature A: Categories Strip */
+.categories-strip {
+  padding: 48px 0 32px;
+  overflow: hidden;
+}
+
+.categories-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  padding: 8px 24px 16px;
+  scrollbar-width: none;  /* Firefox */
+}
+
+.categories-track::-webkit-scrollbar {
+  display: none;  /* Chrome/Safari */
+}
+
+.categories-track.grabbing {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.category-pill {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  min-width: 120px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.category-pill:hover {
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,255,0,0.08);
+}
+
+.category-pill-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.category-pill-name {
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.category-pill-count {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
 </style>
 
 <div id="google_translate_element" style="display:none; visibility:hidden; position:absolute;"></div>
@@ -164,34 +236,90 @@ body { top: 0 !important; }
     </section>
 
     <!-- 3. Category Strip -->
-    <section class="section scroll-reveal">
-        <div class="container" style="position: relative;">
-            <div id="categories-carousel"></div>
-            <script>
-            document.addEventListener('DOMContentLoaded', function() {
-              const container = document.getElementById('categories-carousel')
-              if (!container) return
-              
-              const categories = getActiveCategories()
-              container.innerHTML = categories.map(cat => {
-                const count = getProductsByCategory(cat.slug).length
-                return `
-                  <div class="category-card" 
-                       onclick="window.location='/shop?cat=${cat.slug}'">
-                    <span class="cat-icon">${cat.icon}</span>
-                    <h3 class="cat-name">${cat.name_ar}</h3>
-                    <p class="cat-name-en">${cat.name_en}</p>
-                    <span class="cat-count" 
-                          style="color:${cat.color}">
-                      ${count} منتج
-                    </span>
-                  </div>
-                `
-              }).join('')
-            })
-            </script>
-        </div>
+    <section class="categories-strip">
+      <div class="categories-track" 
+           id="categories-track">
+        <!-- Rendered dynamically -->
+      </div>
     </section>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', 
+    function() {
+      const track = document.getElementById(
+        'categories-track'
+      )
+      if (!track) return
+      
+      // Render categories
+      const cats = getActiveCategories()
+      track.innerHTML = cats.map(cat => {
+        const count = getProductsByCategory(cat.slug).length
+        return `
+          <a class="category-pill" 
+             href="/shop?cat=${cat.slug}"
+             onclick="event.preventDefault(); 
+                      window.location='/shop?cat=${cat.slug}'">
+            <span class="category-pill-icon">
+              ${cat.icon}
+            </span>
+            <span class="category-pill-name">
+              ${cat.name_ar}
+            </span>
+            <span class="category-pill-count" 
+                  style="color:${cat.color}">
+              ${count} منتج
+            </span>
+          </a>
+        `
+      }).join('')
+      
+      // Drag to scroll
+      let isDown = false
+      let startX
+      let scrollLeft
+      
+      track.addEventListener('mousedown', (e) => {
+        isDown = true
+        track.classList.add('grabbing')
+        startX = e.pageX - track.offsetLeft
+        scrollLeft = track.scrollLeft
+        e.preventDefault()
+      })
+      
+      track.addEventListener('mouseleave', () => {
+        isDown = false
+        track.classList.remove('grabbing')
+      })
+      
+      track.addEventListener('mouseup', () => {
+        isDown = false
+        track.classList.remove('grabbing')
+      })
+      
+      track.addEventListener('mousemove', (e) => {
+        if (!isDown) return
+        e.preventDefault()
+        const x = e.pageX - track.offsetLeft
+        const walk = (x - startX) * 1.5
+        track.scrollLeft = scrollLeft - walk
+      })
+      
+      // Touch support
+      let touchStart
+      let touchScrollLeft
+      
+      track.addEventListener('touchstart', (e) => {
+        touchStart = e.touches[0].pageX
+        touchScrollLeft = track.scrollLeft
+      }, {passive: true})
+      
+      track.addEventListener('touchmove', (e) => {
+        const walk = (touchStart - e.touches[0].pageX) * 1.5
+        track.scrollLeft = touchScrollLeft + walk
+      }, {passive: true})
+    })
+    </script>
 
     <!-- 4. Featured Products -->
     <section class="section">
@@ -282,6 +410,169 @@ body { top: 0 !important; }
             </div>
         </div>
     </section>
+
+    <!-- Store Review Float -->
+    <div id="store-review-float"
+         style="position:fixed; bottom:80px;
+                inset-inline-end:24px; z-index:100;
+                display:none;">
+      <button onclick="openStoreReviewModal()"
+              id="store-review-btn"
+              style="background:var(--bg-elevated);
+                     border:1px solid var(--border);
+                     border-radius:50px;
+                     padding:10px 18px;
+                     display:flex; align-items:center;
+                     gap:8px; cursor:pointer;
+                     color:var(--text-primary);
+                     font-family:'Cairo',sans-serif;
+                     font-weight:700; font-size:13px;
+                     box-shadow:0 4px 20px rgba(0,0,0,0.3);
+                     transition:all 200ms;">
+        ⭐ قيّم تجربتك
+      </button>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!localStorage.getItem('heru_store_reviewed')) {
+        const btn = document.getElementById(
+          'store-review-float'
+        )
+        if (btn) btn.style.display = 'block'
+      }
+    })
+    </script>
+    
+    <!-- Store Review Modal -->
+    <div id="store-review-modal"
+         style="display:none; position:fixed;
+                inset:0; z-index:999;
+                background:rgba(0,0,0,0.8);
+                align-items:center;
+                justify-content:center;">
+      <div style="background:var(--bg-card);
+                  border-radius:16px; padding:32px;
+                  max-width:480px; width:90%;
+                  border:1px solid var(--border)">
+        <h3 style="margin:0 0 8px;font-size:20px">
+          قيّم تجربتك معنا ⭐
+        </h3>
+        <p style="color:var(--text-secondary);
+                  margin:0 0 24px;font-size:14px">
+          رأيك بيساعدنا نتحسن ويساعد الناس تاخد قرارها
+        </p>
+        
+        <div id="store-star-picker" class="star-picker" style="display:flex; gap:8px; margin-bottom:16px;">
+          <span class="star-pick" data-val="1" style="font-size:28px;cursor:pointer;color:var(--text-muted);" onclick="selectStoreStar(1)">☆</span>
+          <span class="star-pick" data-val="2" style="font-size:28px;cursor:pointer;color:var(--text-muted);" onclick="selectStoreStar(2)">☆</span>
+          <span class="star-pick" data-val="3" style="font-size:28px;cursor:pointer;color:var(--text-muted);" onclick="selectStoreStar(3)">☆</span>
+          <span class="star-pick" data-val="4" style="font-size:28px;cursor:pointer;color:var(--text-muted);" onclick="selectStoreStar(4)">☆</span>
+          <span class="star-pick" data-val="5" style="font-size:28px;cursor:pointer;color:var(--text-muted);" onclick="selectStoreStar(5)">☆</span>
+        </div>
+        
+        <input type="text" 
+               id="store-review-name"
+               placeholder="اسمك"
+               style="width:100%;margin:16px 0 8px;
+                      padding:12px;border-radius:8px;
+                      border:1px solid var(--border);
+                      background:var(--bg-elevated);
+                      color:var(--text-primary);
+                      font-family:'Cairo',sans-serif;
+                      box-sizing:border-box;">
+        
+        <input type="text"
+               id="store-review-city"
+               placeholder="مدينتك (اختياري)"
+               style="width:100%;margin:0 0 8px;
+                      padding:12px;border-radius:8px;
+                      border:1px solid var(--border);
+                      background:var(--bg-elevated);
+                      color:var(--text-primary);
+                      font-family:'Cairo',sans-serif;
+                      box-sizing:border-box;">
+        
+        <textarea id="store-review-comment"
+                  placeholder="شاركنا تجربتك..."
+                  style="width:100%;height:100px;
+                         padding:12px;border-radius:8px;
+                         border:1px solid var(--border);
+                         background:var(--bg-elevated);
+                         color:var(--text-primary);
+                         font-family:'Cairo',sans-serif;
+                         resize:vertical;
+                         box-sizing:border-box;">
+        </textarea>
+        
+        <div style="display:flex;gap:12px;margin-top:16px">
+          <button class="btn btn-primary" style="flex:1"
+                  onclick="submitStoreReview()">
+            إرسال التقييم
+          </button>
+          <button onclick="closeStoreReviewModal()"
+                  class="btn btn-ghost"
+                  style="flex:1">
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+    let _storeRating = 0
+    
+    function openStoreReviewModal() {
+      document.getElementById('store-review-modal')
+        .style.display = 'flex'
+    }
+    
+    function closeStoreReviewModal() {
+      document.getElementById('store-review-modal')
+        .style.display = 'none'
+    }
+    
+    function selectStoreStar(val) {
+      _storeRating = val
+      document.querySelectorAll(
+        '#store-star-picker .star-pick'
+      ).forEach((s,i) => {
+        s.textContent = i < val ? '★' : '☆'
+        s.style.color = i < val 
+          ? 'var(--accent)' : 'var(--text-muted)'
+      })
+    }
+    
+    function submitStoreReview() {
+      const name = document.getElementById(
+        'store-review-name')?.value?.trim()
+      const city = document.getElementById(
+        'store-review-city')?.value?.trim()
+      const comment = document.getElementById(
+        'store-review-comment')?.value?.trim()
+      
+      if (!_storeRating || !name || !comment) {
+        showToast('من فضلك اكمل البيانات', 'error')
+        return
+      }
+      
+      addStoreReview({
+        reviewer_name: name,
+        reviewer_city: city || 'مصر',
+        rating: _storeRating,
+        comment: comment
+      })
+      
+      localStorage.setItem('heru_store_reviewed', '1')
+      
+      closeStoreReviewModal()
+      
+      document.getElementById('store-review-float')
+        .style.display = 'none'
+      
+      showToast('🎉 شكراً على تقييمك!', 'success')
+    }
+    </script>
 
     <!-- 7. Footer -->
     <footer class="footer">

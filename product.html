@@ -102,9 +102,9 @@ body { top: 0 !important; }
     </div>
 
     <!-- Product Container -->
-    <main class="container page-enter" id="product-root" style="padding-top: 120px; padding-bottom: 60px;">
-        <!-- Filled by JS -->
-    </main>
+    <div id="product-container" class="container page-enter" style="padding-top: 120px; padding-bottom: 60px;">
+      <!-- All content rendered here by JS -->
+    </div>
 
     <!-- Compare Bar -->
     <div id="compare-bar" class="compare-bar">
@@ -230,16 +230,14 @@ body { top: 0 !important; }
     document.addEventListener('DOMContentLoaded', function() {
       const params = new URLSearchParams(window.location.search)
       const id = params.get('id')
-      
       if (!id) {
         window.location.href = '/shop'
         return
       }
       
       const product = getProductById(id)
-      
       if (!product) {
-        document.getElementById('product-root').innerHTML = `
+        document.getElementById('product-container').innerHTML = `
           <div class="not-found">
             <h2>المنتج غير موجود</h2>
             <a href="/shop">تصفح المتجر</a>
@@ -248,25 +246,477 @@ body { top: 0 !important; }
         return
       }
       
-      // Render all product details
       renderProductPage(product)
+    })
+
+    function renderProductPage(product) {
+      const container = document.getElementById('product-container')
+      if (!container) return
       
-      // Render similar products
-      const similar = getProductsByCategory(product.category)
-        .filter(p => p.id !== product.id)
-        .slice(0, 4)
+      const cat = getCategoryBySlug(product.category)
+      const catColor = cat ? cat.color : '#A0A0A0'
+      const catName = cat ? cat.name_ar : product.category
+      const images = product.images?.filter(Boolean) || []
+      const mainImage = images[0] || ''
       
-      const simGrid = document.getElementById('similar-products')
-      if (simGrid) {
-        simGrid.innerHTML = similar.map(p => renderProductCard(p)).join('')
-        attachCardEvents()
+      // Stock status
+      let stockHTML = ''
+      if (product.stock > 5) {
+        stockHTML = `<span class="stock-badge stock-ok" style="color:var(--success);font-weight:700">● متوفر</span>`
+      } else if (product.stock > 0) {
+        stockHTML = `<span class="stock-badge stock-low" style="color:var(--warning);font-weight:700">● كمية محدودة — ${product.stock} قطع فقط</span>`
+      } else {
+        stockHTML = `<span class="stock-badge stock-out" style="color:var(--error);font-weight:700">● نفذت الكمية</span>`
       }
       
-      // Render reviews
-      const reviews = getReviews()
-        .filter(r => r.product_id === id && r.is_approved)
-      renderProductReviews(reviews, product)
-    })
+      // Stars
+      const rating = product.rating || 0
+      const fullStars = Math.floor(rating)
+      const emptyStars = 5 - fullStars
+      const starsHTML = '★'.repeat(fullStars) + '☆'.repeat(emptyStars)
+      
+      container.innerHTML = `
+        <!-- BREADCRUMB -->
+        <nav class="breadcrumb" style="margin-bottom:var(--space-6);display:flex;gap:8px;font-size:14px;color:var(--text-muted)">
+          <a href="/" style="color:var(--text-primary);text-decoration:none">الرئيسية</a>
+          <span>←</span>
+          <a href="/shop" style="color:var(--text-primary);text-decoration:none">المتجر</a>
+          <span>←</span>
+          <a href="/shop?cat=${product.category}" style="color:var(--text-primary);text-decoration:none">
+            ${catName}
+          </a>
+          <span>←</span>
+          <span>${product.name_ar}</span>
+        </nav>
+        
+        <!-- MAIN PRODUCT SECTION -->
+        <div class="product-main" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-8);margin-bottom:var(--space-12);">
+          
+          <!-- IMAGES -->
+          <div class="product-images">
+            <div class="main-image-wrap" 
+                 id="main-image-wrap"
+                 onclick="openLightbox(0)"
+                 style="background:var(--bg-elevated);border-radius:16px;overflow:hidden;border:1px solid var(--border);cursor:pointer;margin-bottom:16px;aspect-ratio:1;">
+              ${mainImage 
+                ? `<img id="main-product-image" 
+                        src="${mainImage}" 
+                        alt="${product.name_ar}"
+                        loading="eager" style="width:100%;height:100%;object-fit:cover;">`
+                : `<div class="image-placeholder" 
+                        style="background:${catColor}22;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                     <span>${product.name_ar}</span>
+                   </div>`
+              }
+            </div>
+            
+            ${images.length > 1 ? `
+            <div class="thumbnails-row" id="thumbnails" style="display:flex;gap:12px;">
+              ${images.map((img, i) => `
+                <div class="thumb ${i===0?'active':''}"
+                     onclick="switchImage('${img}', ${i})"
+                     data-index="${i}"
+                     style="width:80px;height:80px;border-radius:8px;border:2px solid ${i===0?'var(--accent)':'var(--border)'};overflow:hidden;cursor:pointer;">
+                  <img src="${img}" 
+                       alt="${product.name_ar} ${i+1}"
+                       loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+              `).join('')}
+            </div>` : ''}
+          </div>
+          
+          <!-- INFO -->
+          <div class="product-info">
+            <span class="cat-badge"
+                  style="color:${catColor}; background:${catColor}22; padding:4px 12px; border-radius:50px; font-size:12px; font-weight:700;">
+              ${catName}
+            </span>
+            
+            <h1 class="product-title" style="margin:16px 0 8px;font-size:32px;">
+              ${product.name_ar}
+            </h1>
+            <p class="product-title-en" style="color:var(--text-muted);margin:0 0 16px;font-family:'Space Grotesk',sans-serif;">
+              ${product.name_en || ''}
+            </p>
+            
+            <div class="rating-row"
+                 onclick="scrollToReviews()" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;cursor:pointer;">
+              <span class="stars" style="color:var(--warning);letter-spacing:2px;">${starsHTML}</span>
+              <span class="rating-num" style="font-weight:700;">${rating}</span>
+              <span class="review-count" style="color:var(--text-muted);">
+                (${product.reviews || 0} تقييم)
+              </span>
+            </div>
+            
+            <div class="product-price" style="font-size:32px;font-weight:900;color:var(--accent);font-family:'Space Grotesk',sans-serif;margin-bottom:16px;">
+              ${product.price} <span style="font-size:16px;color:var(--text-primary);font-family:'Cairo',sans-serif;">جنيه</span>
+            </div>
+            
+            <div style="margin-bottom:24px;">${stockHTML}</div>
+            
+            <p class="product-desc" style="line-height:1.8;color:var(--text-secondary);margin-bottom:32px;">
+              ${product.description_ar || ''}
+            </p>
+            
+            <hr class="divider" style="border:none;border-top:1px solid var(--border);margin-bottom:32px;">
+            
+            ${product.stock > 0 ? `
+            <div class="qty-row" style="display:flex;align-items:center;gap:16px;margin-bottom:32px;">
+              <label style="font-weight:700;color:var(--text-primary);">الكمية:</label>
+              <div class="qty-controls" style="display:flex;align-items:center;background:var(--bg-elevated);border-radius:8px;border:1px solid var(--border);overflow:hidden;">
+                <button onclick="changeQty(-1)" style="width:40px;height:40px;border:none;background:none;color:var(--text-primary);font-size:20px;cursor:pointer;transition:background 200ms;">−</button>
+                <span id="qty-display" style="width:40px;text-align:center;font-weight:700;font-family:'Space Grotesk',sans-serif;">1</span>
+                <button onclick="changeQty(1)" style="width:40px;height:40px;border:none;background:none;color:var(--text-primary);font-size:20px;cursor:pointer;transition:background 200ms;">+</button>
+              </div>
+            </div>` : ''}
+            
+            <div class="product-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;">
+              <button class="btn-primary btn-full"
+                      id="add-to-cart-btn"
+                      ${product.stock === 0 ? 'disabled' : ''}
+                      onclick="addProductToCart()" style="padding:16px;font-size:16px;">
+                ${product.stock === 0 ? 'نفذت الكمية' : 'أضف للسلة 🛒'}
+              </button>
+              
+              <button class="btn-whatsapp btn-full"
+                      onclick="orderOnWhatsApp()" style="padding:16px;font-size:16px;">
+                اطلب على واتساب 💬
+              </button>
+            </div>
+            
+            <div class="share-row" style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-secondary);">
+              <span>شارك:</span>
+              <button onclick="shareOnWhatsApp()" style="background:none;border:none;color:var(--text-primary);cursor:pointer;font-family:inherit;font-weight:600;">واتساب</button>
+              <span>•</span>
+              <button onclick="copyProductLink()" style="background:none;border:none;color:var(--text-primary);cursor:pointer;font-family:inherit;font-weight:600;">نسخ الرابط</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- TABS -->
+        <div class="product-tabs" style="margin-top:64px;">
+          <div class="tabs-nav" style="display:flex;gap:8px;border-bottom:2px solid var(--border);margin-bottom:32px;">
+            <button class="tab-btn active" onclick="switchTab('details', this)" style="padding:12px 24px;border:none;background:none;color:var(--text-secondary);font-weight:700;cursor:pointer;font-family:inherit;font-size:16px;border-bottom:2px solid transparent;margin-bottom:-2px;">التفاصيل</button>
+            <button class="tab-btn" id="reviews-tab-btn" onclick="switchTab('reviews', this)" style="padding:12px 24px;border:none;background:none;color:var(--text-secondary);font-weight:700;cursor:pointer;font-family:inherit;font-size:16px;border-bottom:2px solid transparent;margin-bottom:-2px;">التقييمات</button>
+            <button class="tab-btn" onclick="switchTab('similar', this)" style="padding:12px 24px;border:none;background:none;color:var(--text-secondary);font-weight:700;cursor:pointer;font-family:inherit;font-size:16px;border-bottom:2px solid transparent;margin-bottom:-2px;">منتجات مشابهة</button>
+          </div>
+          
+          <div id="tab-details" class="tab-panel active">
+            <div class="product-full-desc" style="max-width:800px;line-height:1.8;color:var(--text-secondary);margin-bottom:32px;">
+              <p>${product.description_ar || ''}</p>
+            </div>
+            <table class="specs-table" style="width:100%;max-width:800px;border-collapse:collapse;text-align:right;">
+              <tr style="border-bottom:1px solid var(--border);"><td style="padding:16px;color:var(--text-muted);width:30%;">المقاس</td><td style="padding:16px;font-weight:600;">A4 (21×29.7 سم)</td></tr>
+              <tr style="border-bottom:1px solid var(--border);"><td style="padding:16px;color:var(--text-muted);">المادة</td><td style="padding:16px;font-weight:600;">ورق فاخر عالي الجودة</td></tr>
+              <tr style="border-bottom:1px solid var(--border);"><td style="padding:16px;color:var(--text-muted);">طريقة الطباعة</td><td style="padding:16px;font-weight:600;">طباعة رقمية عالية الجودة</td></tr>
+              ${product.category !== 'poster' ? `
+              <tr style="border-bottom:1px solid var(--border);"><td style="padding:16px;color:var(--text-muted);">عدد الأوراق</td><td style="padding:16px;font-weight:600;">100 ورقة</td></tr>
+              <tr style="border-bottom:1px solid var(--border);"><td style="padding:16px;color:var(--text-muted);">نوع التجليد</td><td style="padding:16px;font-weight:600;">سلك مزدوج</td></tr>
+              ` : ''}
+            </table>
+          </div>
+          
+          <div id="tab-reviews" class="tab-panel" style="display:none; max-width:800px;">
+            <!-- Reviews rendered by renderReviews() -->
+          </div>
+          
+          <div id="tab-similar" class="tab-panel" style="display:none">
+            <div id="similar-products" class="products-grid grid-cols-4"></div>
+          </div>
+        </div>
+        
+        <!-- LIGHTBOX -->
+        <div id="lightbox" class="lightbox" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.9);align-items:center;justify-content:center;" onclick="closeLightbox()">
+          <img id="lightbox-img" src="" alt="" style="max-width:90vw;max-height:90vh;object-fit:contain;">
+          <button class="lightbox-close" onclick="closeLightbox()" style="position:absolute;top:24px;right:24px;background:none;border:none;color:white;font-size:40px;cursor:pointer;">×</button>
+        </div>
+      `
+      
+      // Initialize tabs logic style
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.tab-btn').forEach(b => {
+             b.style.color = 'var(--text-secondary)';
+             b.style.borderColor = 'transparent';
+          })
+          this.style.color = 'var(--accent)';
+          this.style.borderColor = 'var(--accent)';
+        })
+      })
+      // Trigger default
+      document.querySelector('.tab-btn.active').style.color = 'var(--accent)';
+      document.querySelector('.tab-btn.active').style.borderColor = 'var(--accent)';
+      
+      // Initialize context
+      window._currentProduct = product
+      window._currentQty = 1
+      window._productImages = images
+      
+      renderProductReviews(product.id)
+      renderSimilarProducts(product)
+    }
+
+    function changeQty(delta) {
+      const p = window._currentProduct
+      if (!p) return
+      const max = p.stock
+      window._currentQty = Math.max(1, Math.min(max, (window._currentQty || 1) + delta))
+      document.getElementById('qty-display').textContent = window._currentQty
+    }
+
+    function addProductToCart() {
+      const p = window._currentProduct
+      const qty = window._currentQty || 1
+      if (!p || p.stock === 0) return
+      
+      for (let i = 0; i < qty; i++) addToCart(p)
+      
+      const btn = document.getElementById('add-to-cart-btn')
+      btn.textContent = '✓ تمت الإضافة'
+      btn.style.background = 'var(--success)'
+      btn.style.borderColor = 'var(--success)'
+      btn.disabled = true
+      setTimeout(() => {
+        btn.textContent = 'أضف للسلة 🛒'
+        btn.style.background = ''
+        btn.style.borderColor = ''
+        btn.disabled = false
+      }, 2000)
+      showToast('✓ تمت الإضافة للسلة', 'success')
+    }
+
+    function orderOnWhatsApp() {
+      const p = window._currentProduct
+      const qty = window._currentQty || 1
+      if (!p) return
+      const msg = `مرحباً، أنا مهتم بـ ${p.name_ar}\\nالحالة: متوفر\\nالسعر: ${p.price} جنيه\\nالكمية: ${qty}`;
+      openWhatsApp(msg)
+    }
+
+    function shareOnWhatsApp() {
+      const p = window._currentProduct
+      if (!p) return
+      const msg = `شوف المنتج ده من متجر Heru:\\n${p.name_ar} — ${p.price} جنيه\\n${window.location.href}`;
+      openWhatsApp(msg)
+    }
+
+    function copyProductLink() {
+      navigator.clipboard.writeText(window.location.href)
+      showToast('تم نسخ الرابط ✓', 'success')
+    }
+
+    function switchImage(src, index) {
+      const main = document.getElementById('main-product-image')
+      if (main) main.setAttribute('src', src)
+      document.querySelectorAll('.thumb').forEach((t, i) => {
+        t.style.borderColor = (i === index) ? 'var(--accent)' : 'var(--border)'
+      })
+    }
+
+    function openLightbox(index) {
+      const imgs = window._productImages || []
+      if (imgs.length === 0) return
+      const lb = document.getElementById('lightbox')
+      const lbImg = document.getElementById('lightbox-img')
+      if (!lb || !lbImg) return
+      lbImg.src = imgs[index] || imgs[0]
+      lb.style.display = 'flex'
+      document.addEventListener('keydown', handleLightboxKey)
+    }
+
+    function closeLightbox() {
+      const lb = document.getElementById('lightbox')
+      if(lb) lb.style.display = 'none'
+      document.removeEventListener('keydown', handleLightboxKey)
+    }
+
+    function handleLightboxKey(e) {
+      if (e.key === 'Escape') closeLightbox()
+    }
+
+    function switchTab(tabName, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none')
+      const tab = document.getElementById(`tab-${tabName}`)
+      if (tab) tab.style.display = 'block'
+    }
+
+    function scrollToReviews() {
+      const btn = document.getElementById('reviews-tab-btn')
+      if(btn) btn.click()
+      document.getElementById('tab-reviews')?.scrollIntoView({behavior:'smooth'})
+    }
+
+    function renderSimilarProducts(product) {
+      const grid = document.getElementById('similar-products')
+      if (!grid) return
+      const similar = getProductsByCategory(product.category)
+        .filter(p => p.id !== product.id).slice(0, 4)
+      if (similar.length === 0) {
+        grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;">لا توجد منتجات مشابهة</p>'
+        return
+      }
+      grid.innerHTML = similar.map(p => renderProductCard(p)).join('')
+    }
+
+    // REVIEWS
+    function renderProductReviews(productId) {
+      const panel = document.getElementById('tab-reviews')
+      if (!panel) return
+      
+      const all = getReviews().filter(r => r.product_id === productId && r.is_approved)
+      
+      const avg = all.length ? (all.reduce((s,r) => s + r.rating, 0) / all.length).toFixed(1) : 0
+      
+      const bars = [5,4,3,2,1].map(star => {
+        const count = all.filter(r => r.rating === star).length
+        const pct = all.length ? Math.round((count/all.length)*100) : 0
+        return `
+          <div class="rating-bar-row" style="display:flex;align-items:center;gap:16px;margin-bottom:8px;font-size:14px;">
+            <span style="font-family:'Space Grotesk',sans-serif;width:40px;">${star} <span style="color:var(--warning)">★</span></span>
+            <div class="rating-bar-track" style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+              <div class="rating-bar-fill" style="height:100%;width:${pct}%;background:var(--warning);border-radius:4px;"></div>
+            </div>
+            <span style="font-family:'Space Grotesk',sans-serif;width:40px;text-align:left;">${pct}%</span>
+          </div>
+        `
+      }).join('')
+      
+      const reviewsList = all.length > 0
+        ? all.map(r => `
+            <div class="review-card" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px;">
+              <div class="review-header" style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+                <div class="reviewer-avatar" style="width:48px;height:48px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;">
+                  ${r.reviewer_name?.charAt(0) || '؟'}
+                </div>
+                <div style="flex:1;">
+                  <strong style="display:block;font-size:16px;">${r.reviewer_name}</strong>
+                  <span class="review-date" style="color:var(--text-muted);font-size:13px;">
+                    ${new Date(r.created_at).toLocaleDateString('ar-EG')}
+                  </span>
+                </div>
+                <span class="review-stars" style="color:var(--warning);font-size:14px;letter-spacing:2px;">
+                  ${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}
+                </span>
+              </div>
+              <p class="review-comment" style="color:var(--text-secondary);line-height:1.6;margin:0;">${r.comment}</p>
+            </div>
+          `).join('')
+        : `<p class="empty-reviews" style="text-align:center;padding:48px;background:var(--bg-elevated);border-radius:12px;color:var(--text-muted);margin-bottom:32px;">
+             كن أول من يقيّم هذا المنتج
+           </p>`
+      
+      const alreadyReviewed = localStorage.getItem(`heru_reviewed_${productId}`)
+      
+      const reviewForm = alreadyReviewed ? `
+        <div class="already-reviewed" style="background:var(--bg-elevated);color:var(--success);padding:16px;border-radius:8px;text-align:center;font-weight:600;border:1px solid var(--border);">
+          ✓ شكراً! أضفت تقييماً لهذا المنتج من قبل.
+        </div>
+      ` : `
+        <div class="add-review-form" id="review-form" style="background:var(--bg-elevated);padding:32px;border-radius:16px;border:1px solid var(--border);">
+          <h3 style="margin:0 0 24px;font-size:24px;">أضف تقييمك</h3>
+          
+          <div class="star-picker" id="star-picker" style="display:flex;gap:8px;margin-bottom:8px;">
+            ${[1,2,3,4,5].map(n => `
+              <span class="star-pick" 
+                    data-val="${n}"
+                    onclick="selectStar(${n})" style="font-size:32px;cursor:pointer;color:var(--border-strong);transition:color 200ms;">☆</span>
+            `).join('')}
+          </div>
+          <p id="star-error" style="color:var(--error);font-size:13px;display:none;margin:0 0 16px;">
+            من فضلك اختار عدد النجوم
+          </p>
+          <div style="margin-bottom:16px;"></div> <!-- Spacer -->
+          
+          <input type="text" 
+                 id="review-name"
+                 placeholder="اسمك الكريم"
+                 maxlength="50" style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);font-family:inherit;margin-bottom:16px;box-sizing:border-box;">
+          
+          <div style="position:relative;">
+            <textarea id="review-comment"
+                      placeholder="رأيك في المنتج بكل صراحة..."
+                      maxlength="500"
+                      oninput="updateReviewCounter(this)" style="width:100%;height:120px;padding:12px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);font-family:inherit;resize:vertical;margin-bottom:16px;box-sizing:border-box;"></textarea>
+            <span id="review-counter" class="char-counter" style="position:absolute;bottom:28px;left:16px;font-size:12px;color:var(--text-muted);font-family:'Space Grotesk',sans-serif;">0 / 500</span>
+          </div>
+          
+          <button class="btn-primary"
+                  onclick="submitProductReview('${productId}')" style="width:100%;padding:12px;font-size:16px;">
+            إرسال التقييم
+          </button>
+        </div>
+        <div id="review-success" style="display:none;background:var(--success);color:white;padding:24px;border-radius:12px;text-align:center;font-weight:700;font-size:18px;">
+          🎉 شكراً! تقييمك هيظهر بعد المراجعة
+        </div>
+      `
+      
+      const tabBtn = document.getElementById('reviews-tab-btn')
+      if (tabBtn) tabBtn.textContent = `التقييمات (${all.length})`
+      
+      panel.innerHTML = `
+        <div class="rating-overview" style="display:flex;gap:48px;align-items:center;background:var(--bg-elevated);padding:32px;border-radius:16px;margin-bottom:32px;border:1px solid var(--border);">
+          <div class="rating-big" style="font-size:64px;font-weight:900;color:var(--text-primary);font-family:'Space Grotesk',sans-serif;line-height:1;">
+            ${avg} <span style="font-size:24px;color:var(--warning)">★</span>
+          </div>
+          <div class="rating-bars" style="flex:1;">${bars}</div>
+        </div>
+        <div class="reviews-list" style="margin-bottom:32px;">${reviewsList}</div>
+        ${reviewForm}
+      `
+    }
+
+    let _selectedRating = 0
+    function selectStar(val) {
+      _selectedRating = val
+      document.querySelectorAll('.star-pick').forEach((s,i) => {
+        s.textContent = i < val ? '★' : '☆'
+        s.style.color = i < val ? 'var(--warning)' : 'var(--border-strong)'
+      })
+      document.getElementById('star-error').style.display = 'none'
+    }
+
+    function updateReviewCounter(el) {
+      const counter = document.getElementById('review-counter')
+      if(counter) counter.textContent = el.value.length + ' / 500'
+    }
+
+    function submitProductReview(productId) {
+      const name = document.getElementById('review-name')?.value?.trim()
+      const comment = document.getElementById('review-comment')?.value?.trim()
+      
+      let hasError = false
+      let elName = document.getElementById('review-name')
+      let elComment = document.getElementById('review-comment')
+      
+      if(elName) elName.style.borderColor = 'var(--border)'
+      if(elComment) elComment.style.borderColor = 'var(--border)'
+      
+      if (!_selectedRating) {
+        document.getElementById('star-error').style.display = 'block'
+        hasError = true
+      }
+      if (!name) {
+        if(elName) elName.style.borderColor = 'var(--error)'
+        hasError = true
+      }
+      if (!comment || comment.length < 10) {
+        if(elComment) elComment.style.borderColor = 'var(--error)'
+        hasError = true
+      }
+      if (hasError) return
+      
+      addReview({
+        product_id: productId,
+        reviewer_name: name,
+        rating: _selectedRating,
+        comment: comment
+      })
+      
+      localStorage.setItem(`heru_reviewed_${productId}`, '1')
+      
+      document.getElementById('review-form').style.display = 'none'
+      document.getElementById('review-success').style.display = 'block'
+    }
     </script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
