@@ -377,8 +377,23 @@ body { top: 0 !important; }
                     </div>
                     <div style="flex:1;">
                         <label class="form-label">الترتيب*</label>
+                    <div style="flex:1;">
+                        <label class="form-label">الترتيب*</label>
                         <input type="number" id="c-order" class="form-input" value="1" required>
                     </div>
+                </div>
+                
+                <label class="form-label" style="display:block; margin-top:16px;">صورة التصنيف</label>
+                <div class="img-slot-wrapper" style="margin-bottom:16px;">
+                    <div class="dropzone" id="c-dz" onclick="document.getElementById('c-file').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="app.categoriesModule.handleDrop(event)">
+                        <div class="dz-content" id="c-dz-content">
+                            <i data-lucide="upload-cloud" style="width:24px; height:24px; color:var(--text-muted); margin-bottom:8px;"></i>
+                            <div style="font-size:14px; font-weight:600;">اسحب صورة للتصنيف هنا</div>
+                        </div>
+                        <input type="file" id="c-file" accept="image/jpeg, image/png, image/webp" style="display:none;" onchange="app.categoriesModule.handleFileSelect(event)">
+                    </div>
+                    <div style="text-align:center; padding:8px 0; color:var(--text-secondary); font-size:12px;">أو أدخل رابط</div>
+                    <input type="text" id="c-image" class="form-input" dir="ltr" style="text-align:right" placeholder="رابط URL...">
                 </div>
                 
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
@@ -1088,8 +1103,14 @@ const app = {
         openModal() {
             document.getElementById('catForm').reset();
             document.getElementById('c-id').value = '';
+            document.getElementById('c-image').value = '';
+            document.getElementById('c-dz-content').innerHTML = `
+                <i data-lucide="upload-cloud" style="width:24px; height:24px; color:var(--text-muted); margin-bottom:8px;"></i>
+                <div style="font-size:14px; font-weight:600;">اضغط أو اسحب صورة</div>
+            `;
             document.getElementById('cat-modal-title').textContent = 'إضافة تصنيف';
             document.getElementById('catModal').classList.add('active');
+            if(window.lucide) lucide.createIcons();
         },
         edit(id) {
             const c = app.categories.find(x => x.id === id);
@@ -1102,8 +1123,19 @@ const app = {
             document.getElementById('c-color').value = c.color;
             document.getElementById('c-order').value = c.order;
             document.getElementById('c-active').checked = c.is_active;
+            
+            const imgUrl = c.image || '';
+            document.getElementById('c-image').value = imgUrl;
+            const dzContent = document.getElementById('c-dz-content');
+            if(imgUrl) {
+                dzContent.innerHTML = `<img src="${imgUrl}" style="width:100%; height:80px; object-fit:contain; margin-bottom:8px;"><div style="color:var(--success); font-size:12px; font-weight:bold;">✓ مسجلة</div>`;
+            } else {
+                dzContent.innerHTML = `<i data-lucide="upload-cloud" style="width:24px; height:24px; color:var(--text-muted); margin-bottom:8px;"></i><div style="font-size:14px; font-weight:600;">اضغط أو اسحب صورة</div>`;
+            }
+
             document.getElementById('cat-modal-title').textContent = 'تعديل التصنيف';
             document.getElementById('catModal').classList.add('active');
+            if(window.lucide) lucide.createIcons();
         },
         save() {
             const id = document.getElementById('c-id').value || ('cat_' + Date.now());
@@ -1115,6 +1147,7 @@ const app = {
                 slug: document.getElementById('c-slug').value,
                 color: document.getElementById('c-color').value,
                 order: parseInt(document.getElementById('c-order').value),
+                image: document.getElementById('c-image').value.trim(),
                 is_active: document.getElementById('c-active').checked,
                 created_at: document.getElementById('c-id').value ? app.categories.find(x => x.id === id)?.created_at : new Date().toISOString()
             };
@@ -1155,7 +1188,44 @@ const app = {
             if(c) {
                 updateCategory(id, { is_active: !c.is_active });
                 app.categories = getCategories();
-                app.toast(!c.is_active ? 'تم تفعيل المستودع' : 'تم إيقاف المستودع');
+                app.toast(!c.is_active ? 'تم تفعيل المسار' : 'تم إيقاف المسار');
+            }
+        },
+        async uploadFile(file) {
+            const up = app.settings.cloudinary_upload_preset;
+            const cn = app.settings.cloudinary_cloud_name;
+            if(!up || !cn) {
+                app.toast('إعدادات Cloudinary لسه مش جاهزة');
+                return;
+            }
+            const cContent = document.getElementById('c-dz-content');
+            cContent.innerHTML = `<div style="color:var(--accent); font-size:14px; font-weight:600;">جاري الرفع...</div>`;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', up);
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${cn}/image/upload`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if(data.secure_url) {
+                    document.getElementById('c-image').value = data.secure_url;
+                    cContent.innerHTML = `<img src="${data.secure_url}" style="width:100%; height:80px; object-fit:contain; margin-bottom:8px;"><div style="color:var(--success); font-size:12px; font-weight:bold;">✓ تم الرفع</div>`;
+                } else {
+                    cContent.innerHTML = `<div style="color:var(--error); font-size:14px; font-weight:600;">فشل الرفع، حاول تاني</div>`;
+                }
+            } catch(e) {
+                console.error(e);
+                cContent.innerHTML = `<div style="color:var(--error); font-size:14px; font-weight:600;">فشل الرفع، تأكد من الإنترنت</div>`;
+            }
+        },
+        handleFileSelect(e) {
+            if(e.target.files && e.target.files[0]) this.uploadFile(e.target.files[0]);
+        },
+        handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('c-dz').style.borderColor = 'var(--border)';
+            if(e.dataTransfer.files && e.dataTransfer.files[0]) {
+                const file = e.dataTransfer.files[0];
+                if(file.type.startsWith('image/')) this.uploadFile(file);
             }
         }
     },
