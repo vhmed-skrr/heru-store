@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
-    <meta name="viewport" 
-      content="width=device-width, 
-               initial-scale=1.0,
-               maximum-scale=5.0">
-
     <script src="/data.js"></script>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heru — لوحات ودفاتر بتصاميم شبابية عصرية</title>
     <meta name="description" content="متجر Heru — اشتري لوحات فنية ونوت بوك وكشاكيل بتصاميم شبابية حصرية. شحن لكل مصر، اطلب على واتساب.">
     <meta property="og:site_name" content="Heru">
@@ -54,125 +50,132 @@ body { top: 0 !important; }
   overflow: hidden;
 }
 
-.categories-wrapper {
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.carousel-btn {
-  position: absolute;
-  top: 40%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: all 200ms;
-}
-
-.carousel-btn:hover {
-  background: var(--bg-elevated);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.carousel-btn.prev { right: 0; } /* Since RTL, prev is right */
-.carousel-btn.next { left: 0; } /* Since RTL, next is left */
-
 .categories-track {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  padding: 8px 56px; /* Space for arrows */
+  cursor: grab;
+  padding: 8px 20px 16px;
   scrollbar-width: none;
+  padding-inline-end: 32px;
 }
-.categories-track::-webkit-scrollbar { display: none; }
-.categories-track.grabbing { cursor: grabbing; scroll-behavior: auto; }
 
-.category-card {
-  flex: 0 0 calc(25% - 15px); /* 4 visible on desktop */
-  min-width: calc(25% - 15px);
-  text-decoration: none;
+.categories-track::-webkit-scrollbar {
+  display: none;
+}
+
+.categories-track.grabbing {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.category-pill {
+  /* Show 3 full + peek of 4th */
+  flex: 0 0 calc(33.333% - 20px);
+  min-width: calc(33.333% - 20px);
+  
+  /* Size and spacing */
+  height: 110px;
+  padding: 20px 16px;
+  
+  /* Layout */
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  cursor: pointer;
-  -webkit-user-drag: none;
-}
-
-.category-card-img-wrapper {
-  width: 100%;
-  aspect-ratio: 1; /* Square */
-  border-radius: 4px; /* Slight radius, Moleskine is sharp but 4px is premium */
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  
+  /* Design */
   background: var(--bg-card);
   border: 1px solid var(--border);
-}
-
-.category-card-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 400ms ease;
-  pointer-events: none; /* helps drag */
-}
-
-.category-card:hover .category-card-img-wrapper img {
-  transform: scale(1.05); /* subtle zoom */
-}
-
-.category-card-title {
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
-  text-align: right;
-  line-height: 1.2;
-}
-
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 24px;
-}
-
-.carousel-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--border-strong);
-  border: none;
-  padding: 0;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 200ms;
+  text-decoration: none;
+  text-align: center;
+  
+  /* Animation */
+  transition: all 250ms cubic-bezier(0.16,1,0.3,1);
+  position: relative;
+  overflow: hidden;
 }
 
-.carousel-dot.active {
-  background: var(--text-primary);
-  transform: scale(1.3);
+/* Subtle gradient overlay */
+.category-pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg, 
+    rgba(201,255,0,0) 0%, 
+    rgba(201,255,0,0.03) 100%
+  );
+  opacity: 0;
+  transition: opacity 250ms;
 }
 
-/* Responsive constraints */
-@media (max-width: 900px) {
-  .category-card { flex: 0 0 calc(33.333% - 13.33px); min-width: calc(33.333% - 13.33px); }
+.category-pill:hover {
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 24px rgba(0,0,0,0.2),
+    0 0 0 1px var(--accent);
 }
-@media (max-width: 600px) {
-  .category-card { flex: 0 0 calc(60%); min-width: calc(60%); }
-  .categories-track { padding: 8px 16px; }
-  .carousel-btn { display: none; } /* Hide side arrows on mobile */
-  .carousel-dots { margin-top: 16px; }
+
+.category-pill:hover::before {
+  opacity: 1;
+}
+
+.category-pill:active {
+  transform: translateY(-1px);
+}
+
+.category-pill-icon {
+  font-size: 26px;
+  line-height: 1;
+  display: block;
+}
+
+.category-pill-name {
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+  line-height: 1;
+}
+
+.category-pill-count {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+/* Tablet: still 3 */
+@media (max-width: 768px) {
+  .category-pill {
+    flex: 0 0 calc(40% - 8px);
+    min-width: calc(40% - 8px);
+    height: 100px;
+    padding: 16px 12px;
+  }
+  .category-pill-icon { font-size: 22px; }
+  .category-pill-name { font-size: 13px; }
+}
+
+/* Mobile: show 2.5 */
+@media (max-width: 480px) {
+  .category-pill {
+    flex: 0 0 calc(45% - 6px);
+    min-width: calc(45% - 6px);
+    height: 90px;
+    padding: 14px 10px;
+  }
 }
 </style>
 
@@ -295,15 +298,8 @@ body { top: 0 !important; }
 
     <!-- 3. Category Strip -->
     <section class="categories-strip">
-      <div class="categories-wrapper">
-        <button class="carousel-btn next" aria-label="التالي" id="cat-next"><i data-lucide="chevron-right"></i></button>
-        <button class="carousel-btn prev" aria-label="السابق" id="cat-prev"><i data-lucide="chevron-left"></i></button>
-        
-        <div class="categories-track" id="categories-track">
-          <!-- Rendered dynamically -->
-        </div>
-      </div>
-      <div class="carousel-dots" id="cat-dots">
+      <div class="categories-track" 
+           id="categories-track">
         <!-- Rendered dynamically -->
       </div>
     </section>
@@ -311,88 +307,45 @@ body { top: 0 !important; }
     <script>
     document.addEventListener('DOMContentLoaded', 
     function() {
-      const track = document.getElementById('categories-track')
+      const track = document.getElementById(
+        'categories-track'
+      )
       if (!track) return
       
       // Render categories
       const cats = getActiveCategories()
       track.innerHTML = cats.map(cat => {
-        const fallbackImg = 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80'
-        const img = cat.image || fallbackImg
+        const count = getProductsByCategory(cat.slug).length
         return `
-          <a class="category-card" 
+          <a class="category-pill" 
              href="/shop?cat=${cat.slug}"
-             onclick="if(!window.isDragging) { window.location='/shop?cat=${cat.slug}' } event.preventDefault();">
-            <div class="category-card-img-wrapper">
-              <img src="${img}" alt="${cat.name_ar}">
-            </div>
-            <div class="category-card-title">
-              ${cat.name_ar || cat.name_en}
-            </div>
+             onclick="event.preventDefault(); 
+                      window.location='/shop?cat=${cat.slug}'">
+            <span class="category-pill-icon">
+              ${cat.icon}
+            </span>
+            <span class="category-pill-name">
+              ${cat.name_ar}
+            </span>
+            <span class="category-pill-count" 
+                  style="color:${cat.color}">
+              ${count} منتج
+            </span>
           </a>
         `
       }).join('')
       
-      if(window.lucide) lucide.createIcons()
-
-      // Dots
-      const dotsContainer = document.getElementById('cat-dots')
-      if (cats.length > 0) {
-        dotsContainer.innerHTML = cats.map((_, i) => `<button class="carousel-dot ${i===0 ? 'active' : ''}" data-index="${i}"></button>`).join('')
-      }
-      const dots = dotsContainer.querySelectorAll('.carousel-dot')
-      
-      // Arrows
-      const nextBtn = document.getElementById('cat-next')
-      const prevBtn = document.getElementById('cat-prev')
-      
-      nextBtn.addEventListener('click', () => {
-        const cardWidth = track.querySelector('.category-card')?.offsetWidth || 300
-        track.scrollBy({ left: -(cardWidth + 20), behavior: 'smooth' })
-      })
-      prevBtn.addEventListener('click', () => {
-        const cardWidth = track.querySelector('.category-card')?.offsetWidth || 300
-        track.scrollBy({ left: (cardWidth + 20), behavior: 'smooth' })
-      })
-      
-      // Sync dots on scroll
-      track.addEventListener('scroll', () => {
-        const maxScroll = track.scrollWidth - track.clientWidth
-        if (maxScroll <= 0) return
-        
-        let scrollPercentage = Math.abs(track.scrollLeft) / maxScroll
-        scrollPercentage = Math.min(1, Math.max(0, scrollPercentage))
-        
-        // Reverse because of RTL scroll
-        const activeIndex = Math.min(cats.length - 1, Math.round((1 - scrollPercentage) * (cats.length - 1)))
-        
-        dots.forEach((dot, i) => {
-          if (i === activeIndex) dot.classList.add('active')
-          else dot.classList.remove('active')
-        })
-      }, { passive: true })
-      
-      dots.forEach(dot => {
-        dot.addEventListener('click', () => {
-          const idx = parseInt(dot.dataset.index)
-          const maxScroll = track.scrollWidth - track.clientWidth
-          const targetScroll = -((1 - (idx / Math.max(1, cats.length - 1))) * maxScroll)
-          track.scrollTo({ left: targetScroll, behavior: 'smooth' })
-        })
-      })
-
       // Drag to scroll
       let isDown = false
       let startX
       let scrollLeft
-      window.isDragging = false
       
       track.addEventListener('mousedown', (e) => {
         isDown = true
-        window.isDragging = false
         track.classList.add('grabbing')
         startX = e.pageX - track.offsetLeft
         scrollLeft = track.scrollLeft
+        e.preventDefault()
       })
       
       track.addEventListener('mouseleave', () => {
@@ -403,13 +356,11 @@ body { top: 0 !important; }
       track.addEventListener('mouseup', () => {
         isDown = false
         track.classList.remove('grabbing')
-        setTimeout(() => window.isDragging = false, 50)
       })
       
       track.addEventListener('mousemove', (e) => {
         if (!isDown) return
         e.preventDefault()
-        window.isDragging = true
         const x = e.pageX - track.offsetLeft
         const walk = (x - startX) * 1.5
         track.scrollLeft = scrollLeft - walk
@@ -422,18 +373,12 @@ body { top: 0 !important; }
       track.addEventListener('touchstart', (e) => {
         touchStart = e.touches[0].pageX
         touchScrollLeft = track.scrollLeft
-        window.isDragging = false
       }, {passive: true})
       
       track.addEventListener('touchmove', (e) => {
         const walk = (touchStart - e.touches[0].pageX) * 1.5
-        if (Math.abs(walk) > 10) window.isDragging = true
         track.scrollLeft = touchScrollLeft + walk
       }, {passive: true})
-      
-      track.addEventListener('touchend', () => {
-        setTimeout(() => window.isDragging = false, 50)
-      })
     })
     </script>
 
