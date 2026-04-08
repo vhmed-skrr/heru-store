@@ -183,6 +183,18 @@ body { top: 0 !important; }
 
     <div id="toast-container" class="toast-container"></div>
 
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+      <div class="announcement-track">
+        <span>✦ شحن مجاني لكل مصر</span>
+        <span>✦ تصاميم حصرية وعصرية</span>
+        <span>✦ اطلب على واتساب</span>
+        <span>✦ شحن مجاني لكل مصر</span>
+        <span>✦ تصاميم حصرية وعصرية</span>
+        <span>✦ اطلب على واتساب</span>
+      </div>
+    </div>
+
     <!-- 1. Navbar -->
     <nav class="navbar">
         <a href="/" class="nav-brand" data-store-name>Heru</a>
@@ -234,67 +246,98 @@ body { top: 0 !important; }
     </div>
 
     <!-- 2. Hero Section -->
-    <section class="hero">
-        <div class="hero-grid-bg"></div>
-        <div class="hero-grain"></div>
-        <div class="container hero-inner">
-            <div class="hero-text">
-                <div class="hero-eyebrow hero-anim stagger-1">تصاميم حصرية ✦</div>
-                <h1 class="hero-h1 hero-anim stagger-2">فن يناسب <span>أسلوبك</span></h1>
-                <p class="hero-sub hero-anim stagger-3">
-                    لوحات ودفاتر كشاكيل بتصاميم شبابية حصرية — عبّر عن نفسك بطريقتك
-                </p>
-                <div class="hero-ctas hero-anim stagger-4">
-                    <a href="/shop" class="btn btn-primary">تسوق دلوقتي</a>
-                    <a href="/suggest" class="btn btn-ghost">اقترح تصميم ✦</a>
-                </div>
-
-            </div>
-            <div class="hero-visual hero-anim stagger-3">
-                <div class="hero-visual-box" id="hero-image-box">
-                    <div class="hero-visual-accent"></div>
-                    <div class="hero-visual-text" data-store-name-en>HERU</div>
-                </div>
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                  const box = document.getElementById('hero-image-box')
-                  if (!box) return
-                  
-                  const products = getFeaturedProducts()
-                  if (products.length === 0) return
-                  
-                  let current = 0
-                  
-                  function showProduct(index) {
-                    const p = products[index]
-                    const img = p.images?.[0] || ''
-                    box.innerHTML = img 
-                      ? `<img src="${img}" alt="${p.name_ar}" 
-                              style="width:100%;height:100%;
-                                     object-fit:cover;
-                                     border-radius:inherit">
-                         <div class="hero-overlay">
-                           <span class="hero-pname">${p.name_ar}</span>
-                           <span class="hero-price">${p.price} جنيه</span>
-                         </div>`
-                      : `<div class="hero-placeholder">
-                           <span>${p.name_ar}</span>
-                         </div>`
-                  }
-                  
-                  showProduct(0)
-                  setInterval(() => {
-                    current = (current + 1) % products.length
-                    showProduct(current)
-                  }, 3000)
-                })
-                </script>
-            </div>
+    <section class="hero-section" id="hero">
+      <!-- Background image/video area -->
+      <div class="hero-bg" id="hero-bg">
+        <!-- Dynamic: shows featured product image -->
+        <!-- Fallback: dark gradient -->
+      </div>
+      
+      <!-- Dark overlay -->
+      <div class="hero-overlay"></div>
+      
+      <!-- Content -->
+      <div class="hero-content container">
+        
+        <!-- Small tag -->
+        <div class="hero-tag">
+          <span>✦</span>
+          <span>تصاميم حصرية</span>
         </div>
+        
+        <!-- Big headline -->
+        <h1 class="hero-headline">
+          <span class="hero-line-1">فن</span>
+          <span class="hero-line-2">
+            يناسب
+            <em class="hero-accent-word">أسلوبك</em>
+          </span>
+        </h1>
+        
+        <!-- Sub -->
+        <p class="hero-sub">
+          لوحات ودفاتر كشاكيل — تصاميم شبابية حصرية
+        </p>
+        
+        <!-- CTAs -->
+        <div class="hero-actions">
+          <a href="/shop" class="btn-hero-primary">
+            تسوق دلوقتي
+          </a>
+          <a href="/suggest" class="btn-hero-ghost">
+            اقترح تصميم ✦
+          </a>
+        </div>
+        
+      </div>
+      
+      <!-- Scroll indicator -->
+      <div class="hero-scroll-indicator">
+        <span>↓</span>
+      </div>
     </section>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', 
+    function() {
+      const heroBg = document.getElementById('hero-bg')
+      if (!heroBg) return
+      
+      const featured = getFeaturedProducts()
+      if (featured.length === 0) return
+      
+      const images = featured
+        .map(p => p.images?.[0])
+        .filter(Boolean)
+      
+      if (images.length === 0) return
+      
+      let current = 0
+      
+      function setHeroImage(src) {
+        heroBg.innerHTML = 
+          `<img src="${src}" alt="Heru" loading="eager">`
+      }
+      
+      setHeroImage(images[0])
+      
+      if (images.length > 1) {
+        setInterval(() => {
+          current = (current + 1) % images.length
+          setHeroImage(images[current])
+        }, 5000)
+      }
+    })
+    </script>
 
     <!-- 3. Category Strip -->
     <section class="categories-strip">
+      <div class="container" style="margin-bottom: 24px;">
+        <div class="section-label">
+          <span>تصفح التصنيفات</span>
+          <div class="section-label-line"></div>
+        </div>
+      </div>
       <div class="categories-wrapper">
         <button class="carousel-btn next" aria-label="التالي" id="cat-next"><i data-lucide="chevron-right"></i></button>
         <button class="carousel-btn prev" aria-label="السابق" id="cat-prev"><i data-lucide="chevron-left"></i></button>
@@ -437,35 +480,131 @@ body { top: 0 !important; }
     })
     </script>
 
-    <!-- 4. Featured Products -->
-    <section class="section">
-        <div class="container">
-            <div class="section-header scroll-reveal">
-                <h2 class="section-title">أبرز المنتجات</h2>
-                <a href="/shop" class="view-all-link">عرض الكل <i data-lucide="arrow-left" style="width:18px;height:18px;"></i></a>
+    <!-- 4. New Arrivals (Product Grid) -->
+    <section class="new-arrivals-section">
+      <div class="container">
+        
+        <div class="section-header-row">
+          <div>
+            <div class="section-label" 
+                 style="margin-bottom:8px">
+              <span>منتجات مختارة</span>
+              <div class="section-label-line"></div>
             </div>
-            <!-- Dynamic Grid Rendered via JavaScript -->
-            <div id="featured-products-grid" class="grid-cols-4"></div>
-            <script>
-            document.addEventListener('DOMContentLoaded', function() {
-              const grid = document.getElementById('featured-products-grid')
-              if (!grid) return
-              
-              const products = getProducts()
-              const featured = products.filter(p => p.is_featured)
-              const toShow = featured.length > 0 
-                ? featured.slice(0,8) 
-                : products.slice(0,8)
-              
-              grid.innerHTML = toShow.map(p => renderProductCard(p)).join('')
-              attachCardEvents()
-            })
-            </script>
+            <h2 class="section-title">
+              أبرز المنتجات
+            </h2>
+          </div>
+          <a href="/shop" class="view-all-link">
+            عرض الكل ←
+          </a>
         </div>
+        
+        <div id="featured-products-grid" 
+             class="products-grid">
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const grid = document.getElementById('featured-products-grid');
+          if (!grid) return;
+          
+          const products = getProducts();
+          const featured = products.filter(p => p.is_featured);
+          const toShow = featured.length > 0 ? featured.slice(0, 8) : products.slice(0, 8);
+          
+          grid.innerHTML = toShow.map(p => renderProductCard(p)).join('');
+          if(window.attachCardEvents) attachCardEvents();
+          if(window.lucide) lucide.createIcons();
+        });
+        </script>
+        
+        <div class="section-cta-row">
+          <a href="/shop" class="btn-hero-ghost">
+            تصفح كل المنتجات
+          </a>
+        </div>
+        
+      </div>
     </section>
 
+    <!-- Editorial / Lookbook -->
+    <section class="editorial-section">
+      <div class="editorial-grid" id="editorial-grid">
+        <!-- Left: large main image -->
+        <div class="editorial-main" id="editorial-main">
+          <div class="editorial-img-wrap">
+            <!-- Dynamic: shows a featured product image -->
+          </div>
+          <div class="editorial-main-content">
+            <p class="editorial-label">وصلنا جديد</p>
+            <h2 class="editorial-heading">
+              BRAND NEW<br>ARRIVALS
+            </h2>
+            <a href="/shop" class="btn-hero-primary"
+               style="margin-top:24px; text-decoration:none;">
+              SHOP NOW
+            </a>
+          </div>
+        </div>
+        
+        <!-- Right: grid of 4 smaller images -->
+        <div class="editorial-side" id="editorial-side">
+          <!-- Dynamic: 4 product images -->
+        </div>
+      </div>
+    </section>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const products = getProducts()
+      const withImages = products
+        .filter(p => p.images && p.images[0])
+        .slice(0, 5)
+      
+      // Main editorial image
+      const mainWrap = document.querySelector(
+        '.editorial-img-wrap'
+      )
+      if (mainWrap && withImages[0]) {
+        mainWrap.innerHTML = 
+          `<img src="${withImages[0].images[0]}"
+                alt="${withImages[0].name_ar}"
+                loading="lazy">`
+      }
+      
+      // Side grid (4 images)
+      const side = document.getElementById('editorial-side')
+      if (side) {
+        const sideProducts = withImages.slice(1, 5)
+        side.innerHTML = sideProducts.map(p => `
+          <div class="editorial-side-item"
+               onclick="window.location='/product.html?id=${p.id}'" style="cursor:pointer;">
+            <img src="${p.images[0]}" 
+                 alt="${p.name_ar}" loading="lazy">
+            <span class="editorial-side-item-label">
+              ${p.name_ar}
+            </span>
+          </div>
+        `).join('')
+        
+        // If less than 4 products, fill with placeholders
+        const remaining = 4 - sideProducts.length
+        for (let i = 0; i < remaining; i++) {
+          side.innerHTML += `
+            <div class="editorial-side-item"
+                 style="background:var(--bg-elevated)">
+              <span class="editorial-side-item-label">
+                Heru Store
+              </span>
+            </div>
+          `
+        }
+      }
+    });
+    </script>
+
     <!-- 5. Brand Values -->
-    <section class="brand-values-wrapper scroll-reveal">
+    <section class="brand-values-section scroll-reveal">
         <div class="container">
             <div class="brand-values">
                 <div>
@@ -495,6 +634,10 @@ body { top: 0 !important; }
     <!-- 6. Testimonials -->
     <section class="section testimonials-section scroll-reveal">
         <div class="container" id="store-reviews-container">
+            <div class="section-label" style="margin-bottom:8px">
+              <span>آراء العملاء</span>
+              <div class="section-label-line"></div>
+            </div>
             <h2 class="section-title" style="margin-block-end: var(--space-12);">بيقولوا عنا إيه ؟</h2>
             
             <div id="testimonials-slider" style="position:relative"></div>
@@ -691,89 +834,100 @@ body { top: 0 !important; }
     </script>
 
     <!-- 7. Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <!-- Col 1 -->
-                <div>
-                    <div class="footer-brand" data-store-name>Heru</div>
-                    <p class="footer-tagline" data-tagline>منتجات فنية بطابع شبابي لشباب مصر.</p>
-                    <a href="#" data-whatsapp data-whatsapp-msg="مرحباً، لدي استفسار من الموقع" target="_blank" class="btn btn-whatsapp" style="height:48px; font-size:14px;">
-                        <i data-lucide="message-circle" style="width:20px;height:20px;"></i> تواصل معنا
-                    </a>
-                </div>
-                <!-- Col 2 -->
-                <div>
-                    <h4 class="footer-title">روابط سريعة</h4>
-                    <ul class="footer-links">
-                        <li><a href="/">الرئيسية</a></li>
-                        <li><a href="/shop">المتجر</a></li>
-                        <li><a href="#">تتبع طلبي</a></li>
-                    </ul>
-                </div>
-                <!-- Col 3 -->
-                <div>
-                    <h4 class="footer-title">معلومات</h4>
-                    <ul class="footer-links">
-                        <li><a href="/privacy">سياسة الخصوصية</a></li>
-                        <li><a href="/terms">شروط الاستخدام</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div>© <span class="en-text">2026</span> <span data-store-name>Heru</span>. جميع الحقوق محفوظة</div>
-                <div class="footer-socials">
-  <a id="social-instagram"
-     data-social="instagram"
-     href="#" 
-     target="_blank" 
-     rel="noopener noreferrer"
-     aria-label="Instagram"
-     style="display:none">
-    <svg width="20" height="20" viewBox="0 0 24 24"
-         fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-      <circle cx="12" cy="12" r="4"/>
-      <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" 
-              stroke="none"/>
-    </svg>
-  </a>
-  
-  <a id="social-tiktok"
-     data-social="tiktok"
-     href="#"
-     target="_blank"
-     rel="noopener noreferrer"
-     aria-label="TikTok"
-     style="display:none">
-    <svg width="20" height="20" viewBox="0 0 24 24"
-         fill="currentColor">
-      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67
-               a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89
-               2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01
-               a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34
-               6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34
-               V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76
-               a4.85 4.85 0 0 1-1.01-.07z"/>
-    </svg>
-  </a>
-  
-  <a id="social-facebook"
-     data-social="facebook"
-     href="#"
-     target="_blank"
-     rel="noopener noreferrer"
-     aria-label="Facebook"
-     style="display:none">
-    <svg width="20" height="20" viewBox="0 0 24 24"
-         fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7
-               a1 1 0 0 1 1-1h3z"/>
-    </svg>
-  </a>
-</div>
-            </div>
+    <footer class="site-footer">
+      <div class="container">
+        
+        <div class="footer-grid">
+          
+          <!-- Col 1: Brand -->
+          <div class="footer-brand">
+            <div class="footer-logo">Heru</div>
+            <p class="footer-tagline" data-tagline>
+              اتعبر عن نفسك بأسلوبك
+            </p>
+            <a class="footer-wa-btn"
+               data-whatsapp
+               data-whatsapp-link
+               data-whatsapp-msg="مرحباً، أريد الاستفسار"
+               href="#">
+              💬 تواصل معنا
+            </a>
+          </div>
+          
+          <!-- Col 2: Shop -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">SHOP</h4>
+            <a href="/shop.html">كل المنتجات</a>
+            <a href="/shop.html?cat=poster">لوحات</a>
+            <a href="/shop.html?cat=notebook">نوت بوك</a>
+            <a href="/shop.html?cat=sketchbook">كشاكيل</a>
+          </div>
+          
+          <!-- Col 3: Connect -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">CONNECT</h4>
+            <a data-social="instagram" href="#">
+              Instagram
+            </a>
+            <a data-social="tiktok" href="#">
+              TikTok
+            </a>
+            <a data-social="facebook" href="#">
+              Facebook
+            </a>
+          </div>
+          
+          <!-- Col 4: Info -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">INFO</h4>
+            <a href="/track-order.html">تتبع طلبي</a>
+            <a href="/privacy.html">سياسة الخصوصية</a>
+            <a href="/terms.html">شروط الاستخدام</a>
+          </div>
+          
         </div>
+        
+        <!-- Bottom bar -->
+        <div class="footer-bottom">
+          <p>© 2026 <span data-store-name>Heru</span>. جميع الحقوق محفوظة</p>
+          <div class="footer-social-icons">
+            <a data-social="instagram" 
+               href="#" aria-label="Instagram"
+               style="display:none">
+              <!-- Instagram SVG icon -->
+              <svg width="18" height="18" 
+                   viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" 
+                      rx="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1.5" 
+                        fill="currentColor" stroke="none"/>
+              </svg>
+            </a>
+            <a data-social="tiktok"
+               href="#" aria-label="TikTok"
+               style="display:none">
+              <!-- TikTok SVG icon -->
+              <svg width="18" height="18" 
+                   viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+              </svg>
+            </a>
+            <a data-social="facebook"
+               href="#" aria-label="Facebook"
+               style="display:none">
+              <!-- Facebook SVG icon -->
+              <svg width="18" height="18"
+                   viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        
+      </div>
     </footer>
 
     <script src="script.js"></script>

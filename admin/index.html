@@ -13,7 +13,14 @@
     <link rel="stylesheet" href="../styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { margin: 0; padding: 0; background: var(--bg-primary); display: flex; height: 100vh; overflow: hidden; font-family: "Cairo", sans-serif; }
+        body { margin: 0; padding: 0; background: var(--bg-primary); font-family: "Cairo", sans-serif; }
+        @keyframes shake {
+          0%,100% { transform: translateX(0) }
+          20% { transform: translateX(-8px) }
+          40% { transform: translateX(8px) }
+          60% { transform: translateX(-6px) }
+          80% { transform: translateX(6px) }
+        }
         
         /* Auth Overlay */
         #auth-overlay { position: fixed; inset: 0; background: var(--bg-primary); z-index: 9999; display: flex; justify-content: center; align-items: center; }
@@ -112,18 +119,62 @@ body { top: 0 !important; }
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Login -->
-    <div id="auth-overlay">
-        <div class="login-card">
-            <div class="login-brand">Heru</div>
-            <h2 style="margin-bottom: var(--space-6);">لوحة التحكم</h2>
-            <form id="loginForm">
-                <label class="form-label">كلمة السر</label>
-                <input type="password" id="auth-pass" class="form-input" dir="ltr" autofocus required>
-                <div id="auth-error">كلمة السر غير صحيحة</div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">دخول</button>
-            </form>
-        </div>
-    </div>
+<div id="admin-login-page" 
+     style="display:flex; min-height:100vh;
+            align-items:center; 
+            justify-content:center;
+            background:var(--bg-primary)">
+  <div id="login-card"
+       style="background:var(--bg-card);
+              border:1px solid var(--border);
+              border-radius:16px; padding:40px;
+              width:100%; max-width:380px;
+              text-align:center">
+    
+    <h2 style="font-family:'Cairo',sans-serif;
+               font-size:28px; font-weight:900;
+               color:var(--accent); margin:0 0 8px">
+      Heru
+    </h2>
+    <p style="color:var(--text-muted);
+              font-size:14px; margin:0 0 32px">
+      لوحة التحكم
+    </p>
+    
+    <input type="password"
+           id="admin-password-input"
+           placeholder="كلمة السر"
+           style="width:100%; padding:14px 16px;
+                  background:var(--bg-elevated);
+                  border:1px solid var(--border);
+                  border-radius:8px;
+                  color:var(--text-primary);
+                  font-family:'Cairo',sans-serif;
+                  font-size:15px; text-align:right;
+                  margin-bottom:12px;
+                  box-sizing:border-box"
+           onkeydown="if(event.key==='Enter') attemptLogin()">
+    
+    <p id="login-error"
+       style="color:var(--error); font-size:13px;
+              margin:0 0 12px; display:none;
+              font-family:'Cairo',sans-serif">
+      كلمة السر غير صحيحة
+    </p>
+    
+    <button onclick="attemptLogin()"
+            style="width:100%; padding:14px;
+                   background:var(--accent);
+                   color:#000; border:none;
+                   border-radius:8px; cursor:pointer;
+                   font-family:'Cairo',sans-serif;
+                   font-size:15px; font-weight:800">
+      دخول
+    </button>
+  </div>
+</div>
+
+<div id="admin-dashboard" style="display:none; width: 100%; height: 100vh; overflow: hidden;">
 
     <!-- Sidebar -->
     <div class="admin-sidebar">
@@ -645,7 +696,71 @@ body { top: 0 !important; }
         </div>
     </div>
 
+</div>
+
 <script>
+function attemptLogin() {
+  const input = document.getElementById('admin-password-input');
+  const error = document.getElementById('login-error');
+  if (!input) return;
+  
+  const password = input.value;
+  
+  // Get password from settings or use default
+  let correctPassword = 'admin123';
+  try {
+    const settings = JSON.parse(localStorage.getItem('heru_settings') || '{}');
+    if (settings.admin_password) correctPassword = settings.admin_password;
+  } catch(e) {}
+  
+  if (password === correctPassword) {
+    sessionStorage.setItem('heru_admin_auth', 'true');
+    error.style.display = 'none';
+    input.value = '';
+    showDashboard();
+  } else {
+    error.style.display = 'block';
+    input.value = '';
+    const card = document.getElementById('login-card');
+    card.style.animation = 'none';
+    card.offsetHeight; /* trigger reflow */
+    card.style.animation = 'shake 400ms ease';
+    input.focus();
+  }
+}
+
+function checkAuth() {
+  const auth = sessionStorage.getItem('heru_admin_auth');
+  if (auth === 'true') {
+    showDashboard();
+  } else {
+    showLoginPage();
+  }
+}
+
+function showLoginPage() {
+  document.getElementById('admin-login-page').style.display = 'flex';
+  document.getElementById('admin-dashboard').style.display = 'none';
+  setTimeout(() => { document.getElementById('admin-password-input')?.focus(); }, 100);
+}
+
+function showDashboard() {
+  document.getElementById('admin-login-page').style.display = 'none';
+  document.getElementById('admin-dashboard').style.display = 'flex';
+  initAdminDashboard();
+}
+
+function adminLogout() {
+  sessionStorage.removeItem('heru_admin_auth');
+  showLoginPage();
+}
+
+function initAdminDashboard() {
+  app.init();
+}
+
+document.addEventListener('DOMContentLoaded', checkAuth);
+
 const app = {
     settings: { 
         store_name: "Heru",
@@ -664,25 +779,8 @@ const app = {
     init() {
         if(window.lucide) lucide.createIcons();
         this.settings = getSettings();
-        
-        if(sessionStorage.getItem('heru_admin_auth') === 'true') {
-            document.getElementById('auth-overlay').style.display = 'none';
-            this.loadData();
-            this.bindEvents();
-        } else {
-            document.getElementById('loginForm').onsubmit = (e) => {
-                e.preventDefault();
-                const p = document.getElementById('auth-pass').value;
-                if(p === this.settings.admin_password) {
-                    sessionStorage.setItem('heru_admin_auth', 'true');
-                    document.getElementById('auth-overlay').style.display = 'none';
-                    this.loadData();
-                    this.bindEvents();
-                } else {
-                    document.getElementById('auth-error').style.display = 'block';
-                }
-            };
-        }
+        this.loadData();
+        this.bindEvents();
     },
     
     async testCloudinary() {
@@ -720,8 +818,7 @@ const app = {
     },
     
     logout() {
-        sessionStorage.removeItem('heru_admin_auth');
-        window.location.reload();
+        adminLogout();
     },
     
     toast(msg) {
