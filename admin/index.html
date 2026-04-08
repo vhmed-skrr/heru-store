@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
+    <meta name="viewport" 
+      content="width=device-width, 
+               initial-scale=1.0,
+               maximum-scale=5.0">
+
     <script src="/data.js"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heru - لوحة التحكم</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
@@ -208,7 +212,7 @@ body { top: 0 !important; }
             <div id="sec-categories" class="section">
                 <div style="display:flex; justify-content:space-between; margin-bottom: 24px;">
                     <h3 style="margin:0">إدارة التصنيفات</h3>
-                    <button class="btn btn-primary" onclick="app.categoriesModule.openModal()"><i data-lucide="plus"></i> أضف تصنيف</button>
+                    <button class="btn btn-primary" id="open-add-category-btn" onclick="openAddCategoryModal()"><i data-lucide="plus"></i> أضف تصنيف</button>
                 </div>
                 <div class="admin-table-container">
                     <table class="admin-table">
@@ -224,7 +228,7 @@ body { top: 0 !important; }
                     <div class="tabs" id="prod-tabs" style="margin:0; border:none; padding:0; flex-wrap:wrap;">
                         <!-- Dynamically Generated -->
                     </div>
-                    <button class="btn btn-primary" onclick="app.productsModule.openModal()"><i data-lucide="plus"></i> أضف منتج</button>
+                    <button class="btn btn-primary" id="open-add-product-btn" onclick="openAddProductModal()"><i data-lucide="plus"></i> أضف منتج</button>
                 </div>
                 <div class="admin-table-container">
                     <table class="admin-table">
@@ -345,41 +349,38 @@ body { top: 0 !important; }
     </div>
 
     <!-- Category Modal -->
-    <div class="modal" id="catModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="cat-modal-title" style="margin:0;">إضافة تصنيف</h3>
-                <button type="button" class="btn btn-ghost" style="padding:4px" onclick="document.getElementById('catModal').classList.remove('active')"><i data-lucide="x"></i></button>
+    <div class="admin-modal-overlay modal" id="category-modal" style="display:none;">
+        <div class="admin-modal-content modal-content">
+            <div class="admin-modal-header modal-header">
+                <h3 id="category-modal-title" style="margin:0;">إضافة تصنيف</h3>
+                <button type="button" class="btn btn-ghost" style="padding:4px" onclick="closeCategoryModal()"><i data-lucide="x"></i></button>
             </div>
-            <form id="catForm">
-                <input type="hidden" id="c-id">
+            <form id="category-form" onsubmit="return false">
                 <label class="form-label">الاسم بالعربي*</label>
-                <input type="text" id="c-ar" class="form-input" required>
+                <input type="text" id="category-name-ar" class="form-input" required>
                 
                 <label class="form-label">الاسم بالإنجليزي*</label>
-                <input type="text" id="c-en" class="form-input" dir="ltr" style="text-align:right" required oninput="document.getElementById('c-slug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')">
+                <input type="text" id="category-name-en" class="form-input" dir="ltr" style="text-align:right" required oninput="document.getElementById('category-slug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')">
                 
                 <div style="display:flex; gap:16px;">
                     <div style="flex:1;">
                         <label class="form-label">الأيقونة*</label>
-                        <input type="text" id="c-icon" class="form-input" placeholder="🎨" required>
+                        <input type="text" id="category-icon" class="form-input" placeholder="🎨" required>
                     </div>
                     <div style="flex:1;">
                         <label class="form-label">Slug*</label>
-                        <input type="text" id="c-slug" class="form-input" dir="ltr" style="text-align:right" required>
+                        <input type="text" id="category-slug" class="form-input" dir="ltr" style="text-align:right" required>
                     </div>
                 </div>
                 
                 <div style="display:flex; gap:16px;">
                     <div style="flex:1;">
                         <label class="form-label">اللون*</label>
-                        <input type="color" id="c-color" class="form-input" value="#A78BFA" required style="height: 48px; padding: 4px;">
+                        <input type="color" id="category-color" class="form-input" value="#A78BFA" required style="height: 48px; padding: 4px;">
                     </div>
                     <div style="flex:1;">
                         <label class="form-label">الترتيب*</label>
-                    <div style="flex:1;">
-                        <label class="form-label">الترتيب*</label>
-                        <input type="number" id="c-order" class="form-input" value="1" required>
+                        <input type="number" id="category-order" class="form-input" value="1" required>
                     </div>
                 </div>
                 
@@ -398,44 +399,46 @@ body { top: 0 !important; }
                 
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
                     <label class="toggle-switch">
-                        <input type="checkbox" id="c-active" checked>
+                        <input type="checkbox" id="category-active" checked>
                         <span class="toggle-slider"></span>
                     </label>
                     <span style="font-weight:600">مفعّل؟</span>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" style="width:100%;">حفظ التصنيف</button>
+                <div class="admin-modal-footer" style="display:flex; gap:12px">
+                    <button type="button" onclick="saveCategory()" class="btn btn-primary" style="flex:1;">حفظ التصنيف</button>
+                    <button type="button" onclick="closeCategoryModal()" class="btn btn-ghost" style="flex:1;">إلغاء</button>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- Product Modal -->
-    <div class="modal" id="prodModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-title" style="margin:0;">إضافة منتج</h3>
-                <button type="button" class="btn btn-ghost" style="padding:4px" onclick="document.getElementById('prodModal').classList.remove('active')"><i data-lucide="x"></i></button>
+    <div class="admin-modal-overlay modal" id="product-modal" style="display:none;">
+        <div class="admin-modal-content modal-content">
+            <div class="admin-modal-header modal-header">
+                <h3 id="product-modal-title" style="margin:0;">إضافة منتج</h3>
+                <button type="button" class="btn btn-ghost" style="padding:4px" onclick="closeProductModal()"><i data-lucide="x"></i></button>
             </div>
-            <form id="prodForm">
-                <input type="hidden" id="p-id">
+            <form id="product-form" onsubmit="return false">
                 <label class="form-label">الاسم بالعربي</label>
-                <input type="text" id="p-ar" class="form-input" required>
+                <input type="text" id="product-name-ar" class="form-input" required>
                 <label class="form-label">الاسم بالإنجليزي</label>
-                <input type="text" id="p-en" class="form-input" dir="ltr" style="text-align:right" required>
+                <input type="text" id="product-name-en" class="form-input" dir="ltr" style="text-align:right" required>
                 
                 <div style="display:flex; gap:16px;">
                     <div style="flex:1;">
                         <label class="form-label">السعر بالجنيه</label>
-                        <input type="number" id="p-price" class="form-input" required>
+                        <input type="number" id="product-price" class="form-input" required>
                     </div>
                     <div style="flex:1;">
                         <label class="form-label">الكمية في المخزون</label>
-                        <input type="number" id="p-stock" class="form-input" required>
+                        <input type="number" id="product-stock" class="form-input" required>
                     </div>
                 </div>
                 
                 <label class="form-label">التصنيف</label>
-                <select id="p-cat" class="form-input" required style="appearance:auto">
+                <select id="product-category" class="form-input" required style="appearance:auto">
                     <!-- Populated dynamically via JS -->
                 </select>
                 
@@ -496,7 +499,7 @@ body { top: 0 !important; }
                 </div>
                 
                 <label class="form-label">الوصف</label>
-                <textarea id="p-desc" class="form-input" rows="3"></textarea>
+                <textarea id="product-description" class="form-input" rows="3"></textarea>
                 
                 <!-- ATTRIBUTES SECTION -->
                 <div class="form-section">
@@ -510,12 +513,16 @@ body { top: 0 !important; }
                 
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; margin-top:24px;">
                     <label class="toggle-switch">
-                        <input type="checkbox" id="p-feat">
+                        <input type="checkbox" id="product-featured">
                         <span class="toggle-slider"></span>
                     </label>
                     <span style="font-weight:600">منتج مميز؟</span>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%;">حفظ المنتج</button>
+                
+                <div class="admin-modal-footer" style="display:flex; gap:12px">
+                    <button type="button" onclick="saveProduct()" class="btn btn-primary" style="flex:1;">حفظ المنتج</button>
+                    <button type="button" onclick="closeProductModal()" class="btn btn-ghost" style="flex:1;">إلغاء</button>
+                </div>
             </form>
         </div>
     </div>
@@ -800,15 +807,7 @@ const app = {
             this.toast('تم حفظ الإعدادات ✓');
         };
         
-        document.getElementById('catForm').onsubmit = (e) => {
-            e.preventDefault();
-            this.categoriesModule.save();
-        };
-        
-        document.getElementById('prodForm').onsubmit = (e) => {
-            e.preventDefault();
-            this.productsModule.save();
-        };
+        // The old form submit handlers are removed as we use onclick on buttons directly now
         
 
         document.querySelectorAll('#main-rev-tabs .tab-btn').forEach(btn => {
@@ -894,7 +893,7 @@ const app = {
                     <td class="en-text">${p.stock}</td>
                     <td>${p.is_featured ? '<span style="color:var(--accent)">★</span>' : '-'}</td>
                     <td>
-                        <button type="button" class="btn btn-ghost" onclick="app.productsModule.edit('${p.id}')" style="padding:4px"><i data-lucide="edit-2" style="width:16px"></i></button>
+                        <button type="button" class="btn btn-ghost" onclick="openEditProductModal('${p.id}')" style="padding:4px"><i data-lucide="edit-2" style="width:16px"></i></button>
                         <button type="button" class="btn btn-ghost" onclick="app.productsModule.del('${p.id}')" style="padding:4px;color:var(--error)"><i data-lucide="trash-2" style="width:16px"></i></button>
                     </td>
                 </tr>`;
@@ -1094,7 +1093,7 @@ const app = {
                     </label>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-ghost" onclick="app.categoriesModule.edit('${c.id}')" style="padding:4px"><i data-lucide="edit-2" style="width:16px"></i></button>
+                    <button type="button" class="btn btn-ghost" onclick="openEditCategoryModal('${c.id}')" style="padding:4px"><i data-lucide="edit-2" style="width:16px"></i></button>
                     <button type="button" class="btn btn-ghost" onclick="app.categoriesModule.delPrompt('${c.id}')" style="padding:4px;color:var(--error)"><i data-lucide="trash-2" style="width:16px"></i></button>
                 </td>
             </tr>`).join('');
@@ -1498,6 +1497,336 @@ const app = {
 };
 
 window.onload = () => app.init();
+
+// ─── PRODUCT MODAL ───
+let _editingProductId = null;
+
+window.openAddProductModal = function() {
+  _editingProductId = null;
+  document.getElementById('product-modal-title').textContent = 'إضافة منتج جديد';
+  document.getElementById('product-form').reset();
+  
+  // Clear attributes
+  const ac = document.getElementById('attributes-container');
+  if (ac) ac.innerHTML = '';
+  
+  // Clear images
+  for(let i=0; i<4; i++) {
+      const pimg = document.getElementById('p-img-'+i);
+      if(pimg) pimg.value = '';
+      const dzc = document.getElementById('dz-content-'+i);
+      if(dzc) dzc.innerHTML = `
+          <i data-lucide="upload-cloud" style="width:24px; height:24px; color:var(--text-muted); margin-bottom:8px;"></i>
+          <div style="font-size:14px; font-weight:600;">اسحب صورة هنا للرفع</div>
+      `;
+  }
+  
+  // Reset featured
+  const feat = document.getElementById('product-featured');
+  if (feat) feat.checked = false;
+  
+  document.getElementById('product-modal').style.display = 'flex';
+  if(window.lucide) lucide.createIcons();
+};
+
+window.openEditProductModal = function(productId) {
+  const p = app.products.find(x => x.id === productId);
+  if (!p) return;
+  
+  _editingProductId = productId;
+  document.getElementById('product-modal-title').textContent = 'تعديل المنتج';
+  
+  const f = {
+    'product-name-ar': p.name_ar,
+    'product-name-en': p.name_en || '',
+    'product-price': p.price,
+    'product-stock': p.stock || 0,
+    'product-description': p.description_ar || ''
+  };
+  Object.entries(f).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  });
+  
+  const catSelect = document.getElementById('product-category');
+  if (catSelect) catSelect.value = p.category;
+  
+  const feat = document.getElementById('product-featured');
+  if (feat) feat.checked = !!p.is_featured;
+  
+  const imgs = p.images || [p.img];
+  for(let i=0; i<4; i++) {
+      const url = imgs[i] || '';
+      const pimg = document.getElementById('p-img-'+i);
+      if(pimg) pimg.value = url;
+      const c = document.getElementById('dz-content-'+i);
+      if(c) {
+          if(url) {
+              c.innerHTML = `<img src="${url}" style="width:100%; height:80px; object-fit:contain; margin-bottom:8px;"><div style="color:var(--success); font-size:12px; font-weight:bold;">✓ مسجلة</div>`;
+          } else {
+              c.innerHTML = `<i data-lucide="upload-cloud" style="width:24px; height:24px; color:var(--text-muted); margin-bottom:8px;"></i><div style="font-size:14px; font-weight:600;">اسحب صورة هنا للرفع</div>`;
+          }
+      }
+  }
+  
+  app.productsModule.loadAttributesToForm(p.attributes || []);
+  
+  document.getElementById('product-modal').style.display = 'flex';
+  if(window.lucide) lucide.createIcons();
+};
+
+window.closeProductModal = function() {
+  document.getElementById('product-modal').style.display = 'none';
+  _editingProductId = null;
+};
+
+window.saveProduct = function() {
+  const nameAr = document.getElementById('product-name-ar')?.value?.trim();
+  const price = parseFloat(document.getElementById('product-price')?.value);
+  const stock = parseInt(document.getElementById('product-stock')?.value);
+  const category = document.getElementById('product-category')?.value;
+  
+  if (!nameAr) {
+    app.toast('اكتب اسم المنتج بالعربي', 'error');
+    document.getElementById('product-name-ar')?.focus();
+    return;
+  }
+  if (!price || price <= 0) {
+    app.toast('اكتب سعر صحيح', 'error');
+    return;
+  }
+  if (!category) {
+    app.toast('اختار التصنيف', 'error');
+    return;
+  }
+  
+  const images = [];
+  for(let i=0; i<4; i++) {
+      const pimg = document.getElementById('p-img-'+i);
+      if(pimg && pimg.value.trim()) images.push(pimg.value.trim());
+  }
+  
+  const productData = {
+    name_ar: nameAr,
+    name_en: document.getElementById('product-name-en')?.value?.trim() || '',
+    price: price,
+    stock: isNaN(stock) ? 0 : stock,
+    category: category,
+    description_ar: document.getElementById('product-description')?.value?.trim() || '',
+    is_featured: document.getElementById('product-featured')?.checked || false,
+    attributes: app.productsModule.getFormAttributes(),
+    images: images,
+    img: images.length > 0 ? images[0] : ''
+  };
+  
+  if (_editingProductId) {
+    productData.id = _editingProductId;
+    const oldP = app.products.find(x => x.id === _editingProductId);
+    if (oldP) {
+        productData.rating = oldP.rating || 0;
+        productData.reviews = oldP.reviews || 0;
+    }
+    updateProduct(_editingProductId, productData);
+    app.toast('✓ تم تحديث المنتج');
+  } else {
+    productData.id = 'p_' + Date.now();
+    productData.rating = 0;
+    productData.reviews = 0;
+    addProduct(productData);
+    app.toast('✓ تم إضافة المنتج');
+  }
+  
+  app.products = getProducts();
+  app.productsModule.render(document.querySelector('#prod-tabs .active')?.dataset?.filter || 'all');
+  app.sidebar.renderDashboard();
+  closeProductModal();
+};
+
+// ─── CATEGORY MODAL ───
+let _editingCategoryId = null;
+
+window.openAddCategoryModal = function() {
+  _editingCategoryId = null;
+  document.getElementById('category-modal-title').textContent = 'إضافة تصنيف جديد';
+  document.getElementById('category-form')?.reset();
+  const dzContent = document.getElementById('c-dz-content');
+  if(dzContent) {
+      dzContent.innerHTML = `
+          <i data-lucide="upload-cloud" style="width:24px; height:24px; color:var(--text-muted); margin-bottom:8px;"></i>
+          <div style="font-size:14px; font-weight:600;">اسحب صورة للتصنيف هنا</div>
+      `;
+  }
+  document.getElementById('category-modal').style.display = 'flex';
+  if(window.lucide) lucide.createIcons();
+};
+
+window.openEditCategoryModal = function(categoryId) {
+  const cats = app.categories;
+  const cat = cats.find(c => c.id === categoryId);
+  if (!cat) return;
+  
+  _editingCategoryId = categoryId;
+  document.getElementById('category-modal-title').textContent = 'تعديل التصنيف';
+  
+  const f = {
+    'category-name-ar': cat.name_ar,
+    'category-name-en': cat.name_en || '',
+    'category-icon': cat.icon || '',
+    'category-slug': cat.slug || '',
+    'category-color': cat.color || '#A78BFA',
+    'category-order': cat.order || 1
+  };
+  Object.entries(f).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  });
+  
+  const activeToggle = document.getElementById('category-active');
+  if (activeToggle) activeToggle.checked = cat.is_active;
+  
+  const imgUrl = cat.image || '';
+  const cimg = document.getElementById('c-image');
+  if(cimg) cimg.value = imgUrl;
+  const dzContent = document.getElementById('c-dz-content');
+  if(dzContent) {
+      if(imgUrl) {
+          dzContent.innerHTML = `<img src="${imgUrl}" style="width:100%; height:80px; object-fit:contain; margin-bottom:8px;"><div style="color:var(--success); font-size:12px; font-weight:bold;">✓ مسجلة</div>`;
+      } else {
+          dzContent.innerHTML = `<i data-lucide="upload-cloud" style="width:24px; height:24px; color:var(--text-muted); margin-bottom:8px;"></i><div style="font-size:14px; font-weight:600;">اسحب صورة للتصنيف هنا</div>`;
+      }
+  }
+  
+  document.getElementById('category-modal').style.display = 'flex';
+  if(window.lucide) lucide.createIcons();
+};
+
+window.closeCategoryModal = function() {
+  document.getElementById('category-modal').style.display = 'none';
+  _editingCategoryId = null;
+};
+
+window.saveCategory = function() {
+  const nameAr = document.getElementById('category-name-ar')?.value?.trim();
+  const slug = document.getElementById('category-slug')?.value?.trim();
+  
+  if (!nameAr) {
+    app.toast('اكتب اسم التصنيف');
+    return;
+  }
+  if (!slug) {
+    app.toast('اكتب الـ slug');
+    return;
+  }
+  
+  const catData = {
+    name_ar: nameAr,
+    name_en: document.getElementById('category-name-en')?.value?.trim() || '',
+    icon: document.getElementById('category-icon')?.value?.trim() || '📦',
+    slug: slug.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, ''),
+    color: document.getElementById('category-color')?.value || '#A78BFA',
+    order: parseInt(document.getElementById('category-order')?.value) || 1,
+    image: document.getElementById('c-image')?.value?.trim() || '',
+    is_active: document.getElementById('category-active')?.checked ?? true
+  };
+  
+  if (_editingCategoryId) {
+    catData.id = _editingCategoryId;
+    catData.created_at = app.categories.find(x => x.id === _editingCategoryId)?.created_at;
+    updateCategory(_editingCategoryId, catData);
+    app.toast('✓ تم تحديث التصنيف');
+  } else {
+    catData.id = 'cat_' + Date.now();
+    catData.created_at = new Date().toISOString();
+    addCategory(catData);
+    app.toast('✓ تم إضافة التصنيف');
+  }
+  
+  app.categories = getCategories();
+  app.categoriesModule.render();
+  app.productsModule.initTabsAndSelects();
+  closeCategoryModal();
+};
+
+document.getElementById('product-modal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeProductModal();
+});
+
+document.getElementById('category-modal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeCategoryModal();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeProductModal();
+    closeCategoryModal();
+  }
+});t-weight:bold;">✓ مسجلة</div>`;
+    } else {
+        dzContent.innerHTML = `<i data-lucide="upload-cloud" style="width:24px; height:24px; color:var(--text-muted); margin-bottom:8px;"></i><div style="font-size:14px; font-weight:600;">اسحب صورة للتصنيف هنا</div>`;
+    }
+    
+    document.getElementById('category-modal').classList.add('active');
+    if(window.lucide) lucide.createIcons();
+};
+
+window.closeCategoryModal = function() {
+    document.getElementById('category-modal').classList.remove('active');
+    _editingCategoryId = null;
+};
+
+window.saveCategory = function() {
+    const nameAr = document.getElementById('category-name-ar').value.trim();
+    const slug = document.getElementById('category-slug').value.trim();
+    
+    if (!nameAr) return app.toast('الاسم بالعربي مطلوب');
+    if (!slug) return app.toast('الرابط المختصر (Slug) مطلوب');
+    
+    const catData = {
+        name_ar: nameAr,
+        name_en: document.getElementById('category-name-en').value.trim() || '',
+        icon: document.getElementById('category-icon').value || '📦',
+        slug: slug.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+        color: document.getElementById('category-color').value || '#A78BFA',
+        order: parseInt(document.getElementById('category-order').value) || 1,
+        image: document.getElementById('c-image').value.trim(),
+        is_active: document.getElementById('category-active').checked
+    };
+    
+    if (_editingCategoryId) {
+        catData.id = _editingCategoryId;
+        catData.created_at = app.categories.find(x => x.id === _editingCategoryId)?.created_at;
+        updateCategory(_editingCategoryId, catData);
+        app.toast('✓ تم تحديث التصنيف');
+    } else {
+        catData.id = 'cat_' + Date.now();
+        catData.created_at = new Date().toISOString();
+        addCategory(catData);
+        app.toast('✓ تم إضافة التصنيف');
+    }
+    
+    app.categories = getCategories();
+    app.categoriesModule.render();
+    app.productsModule.initTabsAndSelects();
+    closeCategoryModal();
+};
+
+// Modals backdrop close
+document.getElementById('product-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeProductModal();
+});
+document.getElementById('category-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeCategoryModal();
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const prod = document.getElementById('product-modal');
+        const cat = document.getElementById('category-modal');
+        if (prod && prod.classList.contains('active')) closeProductModal();
+        if (cat && cat.classList.contains('active')) closeCategoryModal();
+    }
+});
 </script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
