@@ -148,12 +148,15 @@ const DEFAULT_PRODUCTS = [
 const DEFAULT_CATEGORIES = [
   {id:"cat_1", name_ar:"لوحات", name_en:"Posters",
    icon:"🎨", slug:"poster", color:"#A78BFA",
+   image:"https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=600",
    is_active:true, order:1},
   {id:"cat_2", name_ar:"نوت بوك", name_en:"Notebooks",
    icon:"📓", slug:"notebook", color:"#60A5FA",
+   image:"https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=600",
    is_active:true, order:2},
   {id:"cat_3", name_ar:"كشاكيل", name_en:"Sketchbooks",
    icon:"🖊", slug:"sketchbook", color:"#FBBF24",
+   image:"https://images.unsplash.com/photo-1510172815416-836cd54ea3aa?auto=format&fit=crop&q=80&w=600",
    is_active:true, order:3}
 ]
 
@@ -641,12 +644,31 @@ function migrateProducts() {
   localStorage.setItem('heru_products_migrated_v2', '1')
 }
 
+function migrateCategories() {
+  if (localStorage.getItem('heru_cats_migrated')) return
+  
+  let cats = getCategories()
+  let updated = cats.map(c => {
+    if (!c.image) {
+      if (c.slug === 'poster') c.image = "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=600"
+      else if (c.slug === 'notebook') c.image = "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=600"
+      else if (c.slug === 'sketchbook') c.image = "https://images.unsplash.com/photo-1510172815416-836cd54ea3aa?auto=format&fit=crop&q=80&w=600"
+      else c.image = "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&q=80&w=600"
+    }
+    return c
+  })
+  
+  saveCategories(updated)
+  localStorage.setItem('heru_cats_migrated', 'true')
+}
+
 // ─────────────────────────────
 // RUN ON EVERY PAGE
 // ─────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   initStore()
   migrateProducts()
+  migrateCategories()
   applySettingsToPage()
   updateCartBadge()
   initTheme()

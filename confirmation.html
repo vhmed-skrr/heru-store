@@ -1,85 +1,168 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
+
 <head>
-    <script src="/data.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تأكيد الطلب | Heru</title>
-    <meta property="og:site_name" content="Heru">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" as="style">
+    <meta name="viewport" 
+      content="width=device-width, 
+               initial-scale=1.0,
+               maximum-scale=5.0">
 
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <script src="/settings.js"></script>
-    
-    <style>
-        .conf-container { max-width: 600px; margin: 0 auto; text-align: center; padding-block: var(--space-12); }
-        .success-circle { width: 96px; height: 96px; border-radius: 50%; background: var(--bg-elevated); margin: 0 auto var(--space-6); display: flex; align-items: center; justify-content: center; }
-        
-        .check-anim svg { width: 48px; height: 48px; color: var(--accent); }
-        .check-anim path {
-            stroke-dasharray: 100; stroke-dashoffset: 100;
-            animation: drawCheck 1s ease forwards;
-        }
-        @keyframes drawCheck { to { stroke-dashoffset: 0; } }
-        
-        .conf-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-6); text-align: right; margin-block: var(--space-6); }
-        
-        .conf-btn-wa { background: #25D366; color: white; border: none; font-weight: 700; height: 52px; width: 100%; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 16px; cursor: pointer; transition: opacity 0.2s; }
-        .conf-btn-wa:hover { opacity: 0.9; }
-    </style>
+  <script src="/data.js"></script>
+  <meta charset="UTF-8">
+  <title>تأكيد الطلب | Heru</title>
+  <meta property="og:site_name" content="Heru">
 
-<style>
-/* Hide Google Translate toolbar completely */
-.goog-te-banner-frame { display: none !important; }
-.goog-te-menu-value { display: none !important; }
-#goog-gt-tt { display: none !important; }
-.goog-tooltip { display: none !important; }
-body { top: 0 !important; }
-.skiptranslate { display: none !important; }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap"
+    as="style">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap"
+    as="style">
 
-/* Protect design from translation */
-[data-notranslate] { 
-  font-family: inherit !important; 
-}
-.navbar-logo { 
-  font-family: inherit !important;
-}
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="/settings.js"></script>
 
-#theme-toggle-btn:hover, #lang-toggle-btn:hover {
-  border-color: var(--accent) !important;
-}
-#lang-toggle-btn:hover {
-  color: var(--accent) !important;
-}
-</style>
+  <style>
+    .conf-container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+      padding-block: var(--space-12);
+    }
 
-<div id="google_translate_element" style="display:none; visibility:hidden; position:absolute;"></div>
+    .success-circle {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      margin: 0 auto var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .check-anim svg {
+      width: 48px;
+      height: 48px;
+      color: var(--accent);
+    }
+
+    .check-anim path {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: drawCheck 1s ease forwards;
+    }
+
+    @keyframes drawCheck {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .conf-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      text-align: right;
+      margin-block: var(--space-6);
+    }
+
+    .conf-btn-wa {
+      background: #25D366;
+      color: white;
+      border: none;
+      font-weight: 700;
+      height: 52px;
+      width: 100%;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .conf-btn-wa:hover {
+      opacity: 0.9;
+    }
+  </style>
+
+  <style>
+    /* Hide Google Translate toolbar completely */
+    .goog-te-banner-frame {
+      display: none !important;
+    }
+
+    .goog-te-menu-value {
+      display: none !important;
+    }
+
+    #goog-gt-tt {
+      display: none !important;
+    }
+
+    .goog-tooltip {
+      display: none !important;
+    }
+
+    body {
+      top: 0 !important;
+    }
+
+    .skiptranslate {
+      display: none !important;
+    }
+
+    /* Protect design from translation */
+    [data-notranslate] {
+      font-family: inherit !important;
+    }
+
+    .navbar-logo {
+      font-family: inherit !important;
+    }
+
+    #theme-toggle-btn:hover,
+    #lang-toggle-btn:hover {
+      border-color: var(--accent) !important;
+    }
+
+    #lang-toggle-btn:hover {
+      color: var(--accent) !important;
+    }
+  </style>
+
+  <div id="google_translate_element" style="display:none; visibility:hidden; position:absolute;"></div>
 
 </head>
+
 <body class="page-enter">
 
-    <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container"></div>
 
-    <nav class="navbar">
-        <a href="/" class="nav-brand" data-store-name>Heru</a>
-        <div class="nav-actions">
-            <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
-                <i data-lucide="moon"></i>
-            </button>
-        </div>
-    </nav>
+  <nav class="navbar">
+    <a href="/" class="nav-brand" data-store-name>Heru</a>
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="تغيير المظهر">
+        <i data-lucide="moon"></i>
+      </button>
+    </div>
+  </nav>
 
-    <main class="container" id="confirmation-root" style="min-height: 70vh;">
-        <!-- Injected by JS -->
-    </main>
+  <main class="container" id="confirmation-root" style="min-height: 70vh;">
+    <!-- Injected by JS -->
+  </main>
 
-    <script src="script.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script src="script.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
+
 </html>
